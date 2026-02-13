@@ -5,29 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Band III Vocab Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
         .arabic { font-family: 'Cairo', sans-serif; }
         .perspective-1000 { perspective: 1000px; }
         .card-inner {
             position: relative;
             width: 100%;
             height: 100%;
-            transition: transform 0.5s;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             transform-style: preserve-3d;
         }
-        .flipped { transform: rotateY(180deg); }
-        .card-face {
+        .card-flipped { transform: rotateY(180deg); }
+        .card-front, .card-back {
             position: absolute;
             width: 100%;
             height: 100%;
+            -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 1rem;
-            padding: 0.75rem;
+            padding: 1rem;
             text-align: center;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
@@ -36,8 +37,8 @@
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top: 2px solid #fff;
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -50,8 +51,7 @@
     {
       "imports": {
         "react": "https://esm.sh/react@18.2.0",
-        "react-dom": "https://esm.sh/react-dom@18.2.0/client",
-        "@google/genai": "https://esm.sh/@google/genai@1.41.0"
+        "react-dom": "https://esm.sh/react-dom@18.2.0/client"
       }
     }
     </script>
@@ -62,7 +62,7 @@
         import React, { useState, useEffect, useRef } from 'react';
         import ReactDOM from 'react-dom';
 
-        const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycby7FIHOhY5F-1Be-TKeDZpVpIXoAitIpXoMBXCncRgKXG_by0-ADK8yxifRol_sAnpE4g/exec';
+        const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzk8q3e-MFRQiUnUI6h6Stvc_HZ1zcPRyk_WSYtH06U4dJ4S6NqdtaYCfdvhSJY9ZpnYw/exec';
 
         const VOCAB_LISTS = {
             A: [
@@ -91,29 +91,37 @@
             ],
             C: [
                 { id: 21, en: "Acquire", ar: "يكتسب", def: "Buy or obtain for oneself" },
-                { id: 22, en: "Category", ar: "فئة", def: "A class or division of people/things" },
-                { id: 23, en: "Complex", ar: "معقد", def: "Consisting of many different parts" },
-                { id: 24, en: "Culture", ar: "ثقافة", def: "Ideas and customs of a society" },
-                { id: 25, en: "Design", ar: "يصمم", def: "A plan or drawing of something" },
-                { id: 26, en: "Element", ar: "عنصر", def: "A part or aspect of something" },
-                { id: 27, en: "Focus", ar: "تركيز", def: "The center of interest or activity" },
-                { id: 28, en: "Impact", ar: "تأثير", def: "The action of one object hitting another" },
-                { id: 29, en: "Maintain", ar: "يحافظ", def: "Keep something at the same level" },
-                { id: 30, en: "Potential", ar: "إمكانية", def: "Having the capacity to develop" }
+                { id: 22, en: "Category", ar: "فئة", def: "A class or division of things" },
+                { id: 23, en: "Complex", ar: "معقد", def: "Consisting of many parts" },
+                { id: 24, en: "Culture", ar: "ثقافة", def: "Customs of a society" },
+                { id: 25, en: "Design", ar: "يصمم", def: "A plan or drawing" },
+                { id: 26, en: "Element", ar: "عنصر", def: "A part of something" },
+                { id: 27, en: "Focus", ar: "تركيز", def: "The center of interest" },
+                { id: 28, en: "Impact", ar: "تأثير", def: "Strong effect or influence" },
+                { id: 29, en: "Maintain", ar: "يحافظ", def: "Keep at the same level" },
+                { id: 30, en: "Potential", ar: "إمكانية", def: "Capacity to develop" }
             ],
             D: [
-                { id: 31, en: "Relevant", ar: "ذو صلة", def: "Closely connected to the matter" },
-                { id: 32, en: "Select", ar: "يختار", def: "Carefully choose as being the best" },
-                { id: 33, en: "Transfer", ar: "ينقل", def: "Move from one place to another" },
-                { id: 34, en: "Utility", ar: "منفعة", def: "The state of being useful or profitable" },
-                { id: 35, en: "Volume", ar: "حجم", def: "The amount of space occupied" },
-                { id: 36, en: "Primary", ar: "أساسي", def: "Of chief importance; principal" },
-                { id: 37, en: "Reaction", ar: "رد فعل", def: "An action performed in response" },
-                { id: 38, en: "Strategy", ar: "استراتيجية", def: "A plan of action to achieve a goal" },
-                { id: 39, en: "Task", ar: "مهمة", def: "A piece of work to be done" },
-                { id: 40, en: "View", ar: "رؤية", def: "The ability to see something" }
+                { id: 31, en: "Relevant", ar: "ذو صلة", def: "Connected to the matter" },
+                { id: 32, en: "Select", ar: "يختار", def: "Choose the best" },
+                { id: 33, en: "Transfer", ar: "ينقل", def: "Move from place to place" },
+                { id: 34, en: "Utility", ar: "منفعة", def: "Being useful" },
+                { id: 35, en: "Volume", ar: "حجم", def: "Amount of space" },
+                { id: 36, en: "Primary", ar: "أساسي", def: "Of chief importance" },
+                { id: 37, en: "Reaction", ar: "رد فعل", def: "Action in response" },
+                { id: 38, en: "Strategy", ar: "استراتيجية", def: "Plan to achieve goal" },
+                { id: 39, en: "Task", ar: "مهمة", def: "Work to be done" },
+                { id: 40, en: "View", ar: "رؤية", def: "Ability to see" }
             ]
         };
+
+        const ENCOURAGEMENTS = [
+            "Outstanding work, {name}! You're a vocab natural.",
+            "Incredible focus, {name}! You're mastering these fast.",
+            "Way to go, {name}! Your progress is undeniable.",
+            "Legendary performance, {name}! Keep that momentum.",
+            "Brilliant job, {name}! You're crushing this list."
+        ];
 
         const App = () => {
             const [user, setUser] = useState(null);
@@ -130,6 +138,8 @@
             const [totalTimeLimit, setTotalTimeLimit] = useState(0);
             const [isGameOver, setIsGameOver] = useState(false);
             const [syncing, setSyncing] = useState(false);
+            const [finalTimeLabel, setFinalTimeLabel] = useState("");
+            const [encouragement, setEncouragement] = useState("");
             const timerRef = useRef(null);
 
             const formatTimeLabel = (totalSeconds) => {
@@ -138,18 +148,22 @@
                 return `${m}:${s.toString().padStart(2, '0')}`;
             };
 
-            const sendToSheets = async (finalScore, secondsSpent) => {
+            const triggerSync = async (finalScore, secondsSpent) => {
                 const u = userRef.current;
                 const c = configRef.current;
-                if (!u) return;
+                
+                if (!u || !u.name || !u.className) return;
 
                 setSyncing(true);
+                const timeString = formatTimeLabel(secondsSpent);
+                setFinalTimeLabel(timeString);
+
                 const payload = {
                     "Timestamp": new Date().toLocaleString(),
                     "Student Name": u.name,
                     "Class": u.className,
                     "Score": finalScore,
-                    "Time": formatTimeLabel(secondsSpent),
+                    "Time": timeString,
                     "List": c.list,
                     "Difficulty": c.difficulty,
                     "Mode": c.mode
@@ -163,7 +177,7 @@
                         body: JSON.stringify(payload)
                     });
                 } catch (e) {
-                    console.error("Sheet sync failed", e);
+                    console.error("Sync failed", e);
                 } finally {
                     setSyncing(false);
                 }
@@ -173,10 +187,12 @@
                 e.preventDefault();
                 const name = e.target.studentName.value;
                 const className = e.target.className.value;
-                const newUser = { name, className };
-                userRef.current = newUser;
+                const userData = { name, className };
+                
+                userRef.current = userData;
                 configRef.current = gameConfig;
-                setUser(newUser);
+                
+                setUser(userData);
                 startGame();
             };
 
@@ -190,6 +206,7 @@
                 setScore(0);
                 setMatched([]);
                 setFlipped([]);
+                setEncouragement(ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)].replace("{name}", userRef.current?.name || "Student"));
 
                 const subset = [...list].sort(() => Math.random() - 0.5).slice(0, 10);
                 const newCards = [];
@@ -208,7 +225,7 @@
                             if (t <= 1) {
                                 clearInterval(timerRef.current);
                                 setIsGameOver(true);
-                                sendToSheets(score, totalTimeLimit);
+                                triggerSync(score, totalTimeLimit);
                                 return 0;
                             }
                             return t - 1;
@@ -238,7 +255,8 @@
                         if (newMatched.length === 10) {
                             clearInterval(timerRef.current);
                             setIsGameOver(true);
-                            sendToSheets(newScore, totalTimeLimit - timeLeft);
+                            const secondsSpent = totalTimeLimit - (timeLeft - 1);
+                            triggerSync(newScore, secondsSpent);
                         }
                     } else {
                         setTimeout(() => setFlipped([]), 1000);
@@ -248,27 +266,42 @@
 
             if (!user) {
                 return (
-                    <div className="min-h-screen flex items-center justify-center bg-indigo-900 p-6">
-                        <div className="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl">
-                            <h1 className="text-2xl font-black text-center mb-6 italic uppercase tracking-tight text-slate-800">Vocab Master</h1>
+                    <div className="min-h-screen flex items-center justify-center bg-indigo-950 p-6">
+                        <div className="bg-white rounded-[2rem] p-8 w-full max-w-sm shadow-2xl">
+                            <h1 className="text-3xl font-black text-center mb-6 italic uppercase tracking-tighter text-slate-800">Vocab Master</h1>
                             <form onSubmit={handleLogin} className="space-y-4">
-                                <input name="studentName" required placeholder="Full Name" className="w-full p-4 bg-slate-50 border rounded-xl font-bold" />
-                                <input name="className" required placeholder="Class Name (e.g. 10B)" className="w-full p-4 bg-slate-50 border rounded-xl font-bold" />
-                                <div className="grid grid-cols-2 gap-2">
-                                    <select className="p-3 bg-slate-100 rounded-xl font-bold" onChange={e => setGameConfig({...gameConfig, list: e.target.value})}>
-                                        <option value="A">List A</option>
-                                        <option value="B">List B</option>
-                                        <option value="C">List C</option>
-                                        <option value="D">List D</option>
-                                    </select>
-                                    <select className="p-3 bg-slate-100 rounded-xl font-bold" onChange={e => setGameConfig({...gameConfig, difficulty: e.target.value})} defaultValue="Medium">
-                                        <option>Easy</option><option>Medium</option><option>Hard</option>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Student Identity</label>
+                                    <input name="studentName" required placeholder="Full Name" className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold focus:ring-4 focus:ring-indigo-50 outline-none transition-all" />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Classroom</label>
+                                    <input name="className" required placeholder="Class (e.g. 10B)" className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold focus:ring-4 focus:ring-indigo-50 outline-none transition-all" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Level</label>
+                                        <select className="w-full p-4 bg-slate-100 rounded-2xl font-bold outline-none" onChange={e => setGameConfig({...gameConfig, list: e.target.value})}>
+                                            <option value="A">List A</option>
+                                            <option value="B">List B</option>
+                                            <option value="C">List C</option>
+                                            <option value="D">List D</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Time</label>
+                                        <select className="w-full p-4 bg-slate-100 rounded-2xl font-bold outline-none" onChange={e => setGameConfig({...gameConfig, difficulty: e.target.value})} defaultValue="Medium">
+                                            <option>Easy</option><option>Medium</option><option>Hard</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Game Mode</label>
+                                    <select className="w-full p-4 bg-slate-100 rounded-2xl font-bold outline-none" onChange={e => setGameConfig({...gameConfig, mode: e.target.value})}>
+                                        <option>English-Arabic</option><option>Word-Definition</option>
                                     </select>
                                 </div>
-                                <select className="w-full p-3 bg-slate-100 rounded-xl font-bold" onChange={e => setGameConfig({...gameConfig, mode: e.target.value})}>
-                                    <option>English-Arabic</option><option>Word-Definition</option>
-                                </select>
-                                <button className="w-full py-4 bg-indigo-600 text-white rounded-xl font-black text-lg active:scale-95 transition-transform mt-4">START GAME</button>
+                                <button className="w-full py-5 bg-indigo-600 text-white rounded-[1.5rem] font-black text-lg active:scale-95 transition-all mt-6 shadow-xl shadow-indigo-100">START MISSION</button>
                             </form>
                         </div>
                     </div>
@@ -276,27 +309,38 @@
             }
 
             return (
-                <div className="flex flex-col min-h-screen">
-                    <div className="h-1.5 w-full bg-slate-200">
+                <div className="flex flex-col min-h-screen bg-slate-50">
+                    <div className="h-2 w-full bg-slate-200 sticky top-0 z-50">
                         <div className="h-full bg-indigo-600 transition-all duration-1000" style={{ width: `${(timeLeft/totalTimeLimit)*100}%` }}></div>
                     </div>
-                    <header className="bg-white p-4 border-b flex justify-between items-center px-6">
-                        <div className="text-xl font-black tabular-nums text-slate-700">{formatTimeLabel(timeLeft)}</div>
-                        <div className="text-center">
-                            <div className="text-xs font-black text-slate-400 uppercase">Score</div>
-                            <div className="text-xl font-black text-indigo-600">{score}</div>
+                    
+                    <header className="bg-white/80 backdrop-blur-md p-4 border-b flex justify-between items-center px-6 sticky top-2 z-40">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Time Remaining</span>
+                            <span className="text-xl font-black tabular-nums text-slate-700">{formatTimeLabel(timeLeft)}</span>
+                        </div>
+                        
+                        <div className="text-center hidden sm:block">
+                            <div className="px-4 py-1.5 bg-indigo-50 rounded-full inline-block">
+                                <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">{user.name} • {user.className} • LIST {gameConfig.list}</span>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col items-end">
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none text-right">Progress</span>
+                            <span className="text-xl font-black text-indigo-600 tabular-nums">{score}</span>
                         </div>
                     </header>
 
-                    <main className="flex-1 p-6 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4 max-w-5xl mx-auto w-full">
+                    <main className="flex-1 p-6 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4 max-w-6xl mx-auto w-full pb-20">
                         {cards.map((card, i) => {
                             const show = flipped.includes(i) || matched.includes(card.id);
                             return (
                                 <div key={card.uid} onClick={() => handleCardClick(i)} className="aspect-[4/3] perspective-1000 cursor-pointer">
-                                    <div className={`card-inner ${show ? 'flipped' : ''}`}>
-                                        <div className="card-face bg-white border-2 border-slate-100 text-slate-200 font-black text-2xl">?</div>
-                                        <div className={`card-face card-back border-2 ${matched.includes(card.id) ? 'bg-emerald-500 border-emerald-400 text-white' : 'bg-white border-indigo-500 text-indigo-600'}`}>
-                                            <span className={`font-bold ${card.isAr ? 'arabic text-lg' : 'text-xs sm:text-sm'}`}>{card.text}</span>
+                                    <div className={`card-inner ${show ? 'card-flipped' : ''}`}>
+                                        <div className="card-front bg-white border-2 border-slate-100 text-slate-200 font-black text-4xl">?</div>
+                                        <div className={`card-back border-2 ${matched.includes(card.id) ? 'bg-emerald-500 border-emerald-400 text-white shadow-lg shadow-emerald-100' : 'bg-white border-indigo-600 text-indigo-600 shadow-md'}`}>
+                                            <span className={`font-bold leading-tight ${card.isAr ? 'arabic text-2xl' : 'text-sm sm:text-base'}`}>{card.text}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -305,17 +349,56 @@
                     </main>
 
                     {isGameOver && (
-                        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-                            <div className="bg-white rounded-[2rem] p-10 text-center max-w-sm w-full shadow-2xl relative">
-                                {syncing && <div className="absolute top-4 right-4 flex items-center gap-2"><div className="spinner !border-indigo-600 !border-t-transparent"></div><span className="text-[8px] font-bold text-indigo-600">SYNCING</span></div>}
-                                <h2 className="text-3xl font-black italic uppercase mb-2">Result</h2>
-                                <div className="text-5xl font-black text-indigo-600 my-4">{score}</div>
-                                <div className="text-sm font-bold text-slate-400 mb-8 uppercase tracking-widest">Points Collected</div>
-                                <button onClick={startGame} className="w-full py-4 bg-indigo-600 text-white rounded-xl font-black mb-2">PLAY AGAIN</button>
-                                <button onClick={() => setUser(null)} className="w-full py-4 bg-slate-100 text-slate-400 rounded-xl font-black">EXIT</button>
+                        <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex items-center justify-center p-6">
+                            <div className="bg-white rounded-[2.5rem] p-10 text-center max-w-md w-full shadow-2xl relative overflow-hidden">
+                                {syncing && (
+                                    <div className="absolute top-0 left-0 w-full h-1 bg-indigo-100 overflow-hidden">
+                                        <div className="h-full bg-indigo-600 animate-[loading_1.5s_infinite_linear]" style={{width:'40%'}}></div>
+                                    </div>
+                                )}
+                                
+                                <div className="mb-8">
+                                    <div className="w-16 h-16 bg-emerald-50 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                                        <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
+                                    <h2 className="text-xl font-bold text-slate-800 mb-2 leading-tight">
+                                        {encouragement}
+                                    </h2>
+                                    <p className="text-slate-400 text-xs font-black uppercase tracking-widest">Mission Complete</p>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4 mb-8">
+                                    <div className="bg-slate-50 rounded-3xl p-6">
+                                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Score</div>
+                                        <div className="text-4xl font-black text-indigo-600 tracking-tighter">{score}</div>
+                                    </div>
+                                    <div className="bg-slate-50 rounded-3xl p-6">
+                                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Time Spent</div>
+                                        <div className="text-4xl font-black text-indigo-600 tracking-tighter">{finalTimeLabel || "0:00"}</div>
+                                    </div>
+                                </div>
+                                
+                                {syncing && (
+                                    <div className="flex items-center justify-center gap-2 mb-6 text-indigo-600">
+                                        <div className="spinner !border-indigo-600 !border-t-transparent"></div>
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Saving to Cloud...</span>
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-1 gap-3">
+                                    <button onClick={startGame} className="w-full py-5 bg-indigo-600 text-white rounded-[1.5rem] font-black shadow-xl shadow-indigo-100 active:scale-95 transition-all">TRY AGAIN</button>
+                                    <button onClick={() => setUser(null)} className="w-full py-4 text-slate-400 rounded-[1.5rem] font-black hover:bg-slate-50 active:scale-95 transition-all text-sm">BACK TO MENU</button>
+                                </div>
                             </div>
                         </div>
                     )}
+                    
+                    <style>{`
+                        @keyframes loading {
+                            0% { transform: translateX(-100%); }
+                            100% { transform: translateX(300%); }
+                        }
+                    `}</style>
                 </div>
             );
         };
