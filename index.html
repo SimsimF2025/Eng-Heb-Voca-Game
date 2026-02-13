@@ -8,8 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Cairo:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.92);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass: rgba(255, 255, 255, 0.95);
         }
         body { 
             font-family: 'Outfit', sans-serif; 
@@ -26,6 +25,7 @@
             height: 100%;
             transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transform-style: preserve-3d;
+            cursor: pointer;
         }
         .card-flipped { transform: rotateY(180deg); }
         .card-front, .card-back {
@@ -37,40 +37,48 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 1.5rem;
-            padding: 1.25rem;
+            border-radius: 1rem;
+            padding: 1rem;
             text-align: center;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-        .card-front {
-            background: var(--glass);
-            border: 2px solid white;
-            color: #4338ca;
-        }
-        .card-back { 
-            transform: rotateY(180deg);
-            background: #ffffff;
-            border: 3px solid #4338ca;
-        }
+        .card-front { background: var(--glass); border: 2px solid white; color: #4338ca; }
+        .card-back { transform: rotateY(180deg); background: #ffffff; border: 2px solid #4338ca; }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        .float-anim { animation: float 4s ease-in-out infinite; }
-
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .spinner {
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top: 3px solid #fff;
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .gap-select {
+            appearance: none;
+            background-color: #f1f5f9;
+            border-bottom: 3px solid #4338ca;
+            border-radius: 0.4rem;
+            padding: 4px 12px;
+            font-weight: 800;
+            color: #4338ca;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s;
+            margin: 0 4px;
+            font-size: 1.25rem;
+        }
+        .gap-select:focus { background-color: #4338ca; color: white; }
+        
+        .app-container {
+            max-width: 580px;
+            margin-left: auto;
+            margin-right: auto;
+        }
     </style>
 </head>
-<body class="text-slate-900">
+<body class="text-slate-900 p-4">
     <div id="root"></div>
 
     <script type="importmap">
@@ -81,7 +89,6 @@
       }
     }
     </script>
-
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <script type="text/babel" data-type="module">
@@ -141,17 +148,22 @@
             ]
         };
 
+        const ENCOURAGEMENTS = {
+            excellent: ["Outstanding! You're a vocab master!", "Perfect score! Fouad Nasir would be proud!", "Incredible work! You've mastered this list!"],
+            good: ["Great job! You're almost there!", "Well done! Your hard work is paying off!", "Solid performance! Keep pushing!"],
+            fair: ["Good effort! Keep practicing to get better.", "Not bad! A bit more study and you'll be an expert.", "You're getting there! Don't stop now!"],
+            low: ["Don't give up! Try again to improve.", "Mistakes are proof you're learning. Keep at it!", "Keep studying! Success comes with practice."]
+        };
+
         const App = () => {
             const [user, setUser] = useState(null);
             const [view, setView] = useState('login'); 
             const [gameConfig, setGameConfig] = useState({ difficulty: 'Medium', list: 'A', mode: 'English-Arabic' });
-            
             const [cards, setCards] = useState([]);
             const [flipped, setFlipped] = useState([]);
             const [matched, setMatched] = useState([]);
             const [score, setScore] = useState(0);
             const [timeLeft, setTimeLeft] = useState(0);
-            const [totalTimeLimit, setTotalTimeLimit] = useState(0);
             const [isGameOver, setIsGameOver] = useState(false);
             const [syncing, setSyncing] = useState(false);
             const [testResult, setTestResult] = useState(null);
@@ -171,7 +183,6 @@
                     "Class": userRef.current?.className,
                     "List": gameConfig.list,
                     "Difficulty": gameConfig.difficulty,
-                    "Mode": gameConfig.mode,
                     ...payloadExtras
                 };
                 try {
@@ -180,28 +191,21 @@
                 setSyncing(false);
             };
 
-            const handleLogin = (target) => {
+            const handleLogin = () => {
                 const name = document.getElementById('nameIn')?.value;
                 const cls = document.getElementById('classIn')?.value;
                 if (!name || !cls) return;
                 const userData = { name, className: cls };
                 userRef.current = userData;
                 setUser(userData);
-                setView(target);
+                setView('menu');
             };
 
             const startGame = () => {
                 const list = VOCAB_LISTS[gameConfig.list] || VOCAB_LISTS.A;
                 const duration = gameConfig.difficulty === 'Easy' ? 180 : gameConfig.difficulty === 'Medium' ? 120 : 60;
-                setTotalTimeLimit(duration);
-                setTimeLeft(duration);
-                setScore(0);
-                setMatched([]);
-                setFlipped([]);
-                setIsGameOver(false);
-                setView('game');
-
-                const subset = [...list].sort(() => 0.5 - Math.random()).slice(0, 8);
+                setTimeLeft(duration); setScore(0); setMatched([]); setFlipped([]); setIsGameOver(false); setView('game');
+                const subset = [...list].sort(() => 0.5 - Math.random()).slice(0, 6);
                 const newCards = [];
                 subset.forEach(item => {
                     newCards.push({ id: item.id, text: item.en, type: 'en', uid: `e-${item.id}` });
@@ -212,17 +216,15 @@
             };
 
             const startTest = () => {
-                setTestResult(null);
-                setTestAnswers({});
-                setTimeLeft(300);
+                setTestResult(null); setTestAnswers({}); setTimeLeft(300);
                 const fullList = VOCAB_LISTS[gameConfig.list] || VOCAB_LISTS.A;
                 const shuffled = [...fullList].sort(() => 0.5 - Math.random());
-                
-                const questions = shuffled.slice(0, 10).map((item) => ({
+                const questions = shuffled.slice(0, 10).map((item, index) => ({
                     id: item.id,
+                    type: index < 5 ? 'multiple' : 'dropdown',
                     correct: item.en,
                     sentence: item.sentence,
-                    options: [item.en, ...fullList.filter(x => x.id !== item.id).sort(() => 0.5 - Math.random()).slice(0, 3).map(x => x.en)].sort()
+                    options: [item.en, ...fullList.filter(x => x.id !== item.id).sort(() => 0.5 - Math.random()).slice(0, 3).map(x => x.en)].sort(() => 0.5 - Math.random())
                 }));
                 setTestQuestions(questions);
                 setView('test');
@@ -232,152 +234,121 @@
                 let p = 0;
                 testQuestions.forEach(q => { if (testAnswers[q.id] === q.correct) p += 10; });
                 setTestResult(p);
-                triggerSync({ "Mode": "Test", "Score": p, "Time": formatTimeLabel(300 - timeLeft), "Session Type": "Assessment" });
+                triggerSync({ "Mode": "Test", "Score": p, "Time": formatTimeLabel(300 - timeLeft) });
             };
 
             useEffect(() => {
                 if (user && (view === 'game' || (view === 'test' && testResult === null)) && timeLeft > 0) {
                     timerRef.current = setInterval(() => setTimeLeft(t => t - 1), 1000);
                 }
-                if (timeLeft === 0 && user) {
+                if (timeLeft === 0 && user && (view === 'game' || (view === 'test' && testResult === null))) {
                     if (view === 'game') setIsGameOver(true);
-                    if (view === 'test' && testResult === null) submitTest();
+                    else submitTest();
                 }
                 return () => clearInterval(timerRef.current);
             }, [user, view, timeLeft, testResult]);
 
-            const handleCardClick = (idx) => {
-                if (isGameOver || flipped.length === 2 || flipped.includes(idx) || matched.includes(cards[idx].id)) return;
-                const next = [...flipped, idx];
-                setFlipped(next);
-                if (next.length === 2) {
-                    const c1 = cards[next[0]];
-                    const c2 = cards[next[1]];
-                    if (c1.id === c2.id && c1.type !== c2.type) {
-                        setMatched(m => [...m, c1.id]);
-                        setScore(s => s + 10);
-                        setFlipped([]);
-                        if (matched.length + 1 === 8) setIsGameOver(true);
-                    } else {
-                        setTimeout(() => setFlipped([]), 1000);
-                    }
-                }
+            const getEncouragement = (score) => {
+                const cat = score >= 90 ? 'excellent' : score >= 70 ? 'good' : score >= 50 ? 'fair' : 'low';
+                const arr = ENCOURAGEMENTS[cat];
+                return arr[Math.floor(Math.random() * arr.length)];
             };
 
             if (view === 'login') return (
-                <div className="min-h-screen flex items-center justify-center p-6">
-                    <div className="bg-white/95 backdrop-blur-xl rounded-[3rem] p-12 w-full max-w-lg shadow-2xl border border-white/50 float-anim text-center">
-                        <h1 className="text-6xl font-black italic tracking-tighter text-indigo-900 mb-0">VOCAB MASTER</h1>
-                        <p className="text-2xl font-black text-indigo-600 mb-4 tracking-tight">Fouad Nasir</p>
-                        <div className="h-1.5 w-24 bg-indigo-600 mx-auto rounded-full mb-4 opacity-20"></div>
-                        <p className="text-lg font-bold text-slate-400 uppercase tracking-widest mb-10">Student Portal</p>
-                        <div className="space-y-6">
-                            <input id="nameIn" placeholder="Full Name" className="w-full p-6 bg-slate-100 rounded-3xl font-black text-xl border-2 border-transparent focus:border-indigo-600 outline-none transition-all" />
-                            <input id="classIn" placeholder="Class (e.g. 11A)" className="w-full p-6 bg-slate-100 rounded-3xl font-black text-xl border-2 border-transparent focus:border-indigo-600 outline-none transition-all" />
-                            <button onClick={() => handleLogin('menu')} className="w-full py-6 bg-indigo-600 text-white rounded-3xl font-black text-2xl uppercase tracking-tighter hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-200">Start Learning</button>
+                <div className="min-h-[80vh] flex items-center justify-center">
+                    <div className="bg-white rounded-[2rem] p-8 w-full max-w-sm shadow-2xl text-center border-t-8 border-indigo-600">
+                        <h1 className="text-4xl font-black text-indigo-900 mb-1">VOCAB MASTER</h1>
+                        <p className="text-indigo-600 font-bold mb-6 italic">Fouad Nasir</p>
+                        <div className="space-y-4">
+                            <input id="nameIn" placeholder="Student Name" className="w-full p-4 bg-slate-100 rounded-xl font-bold border-2 border-transparent focus:border-indigo-500 outline-none text-lg" />
+                            <input id="classIn" placeholder="Class (e.g. 11B)" className="w-full p-4 bg-slate-100 rounded-xl font-bold border-2 border-transparent focus:border-indigo-500 outline-none text-lg" />
+                            <button onClick={handleLogin} className="w-full py-4 bg-indigo-600 text-white rounded-xl font-black text-xl shadow-lg">ENTER PORTAL</button>
                         </div>
                     </div>
                 </div>
             );
 
             if (view === 'menu') return (
-                <div className="min-h-screen flex items-center justify-center p-6">
-                    <div className="w-full max-w-4xl grid md:grid-cols-2 gap-8">
-                        <div className="bg-white/95 rounded-[3.5rem] p-10 shadow-2xl space-y-8 flex flex-col justify-center">
-                            <h2 className="text-5xl font-black text-indigo-950 leading-tight">Welcome,<br/>{user.name}</h2>
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-3">
-                                        <label className="text-xl font-black uppercase text-indigo-600 ml-2 block">LIST</label>
-                                        <select className="w-full p-5 bg-slate-100 rounded-2xl font-black text-xl outline-none border-2 border-transparent focus:border-indigo-600" value={gameConfig.list} onChange={e => setGameConfig({...gameConfig, list: e.target.value})}>
-                                            <option value="A">LIST A</option>
-                                            <option value="B">LIST B</option>
-                                            <option value="C">LIST C</option>
-                                            <option value="D">LIST D</option>
-                                        </select>
-                                    </div>
-                                    <div className="space-y-3">
-                                        <label className="text-xl font-black uppercase text-indigo-600 ml-2 block">LEVEL</label>
-                                        <select className="w-full p-5 bg-slate-100 rounded-2xl font-black text-xl outline-none border-2 border-transparent focus:border-indigo-600" value={gameConfig.difficulty} onChange={e => setGameConfig({...gameConfig, difficulty: e.target.value})}>
-                                            <option>Easy</option><option>Medium</option><option>Hard</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-xl font-black uppercase text-indigo-600 ml-2 block">PRACTICE MODE</label>
-                                    <select className="w-full p-5 bg-slate-100 rounded-2xl font-black text-xl outline-none border-2 border-transparent focus:border-indigo-600" value={gameConfig.mode} onChange={e => setGameConfig({...gameConfig, mode: e.target.value})}>
-                                        <option>English-Arabic</option><option>Word-Definition</option>
-                                    </select>
-                                </div>
+                <div className="app-container space-y-4 py-8">
+                    <div className="bg-white rounded-[2rem] p-6 shadow-xl">
+                        <h2 className="text-2xl font-black text-indigo-950 mb-4">Welcome, {user.name}</h2>
+                        <div className="grid grid-cols-2 gap-3 mb-4">
+                            <div className="space-y-1">
+                                <label className="text-xs font-black text-indigo-500 uppercase ml-1">Vocab List</label>
+                                <select className="w-full p-3 bg-slate-50 rounded-xl font-black text-lg outline-none border border-slate-200" value={gameConfig.list} onChange={e => setGameConfig({...gameConfig, list: e.target.value})}>
+                                    <option value="A">LIST A</option><option value="B">LIST B</option><option value="C">LIST C</option><option value="D">LIST D</option>
+                                </select>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs font-black text-indigo-500 uppercase ml-1">Speed</label>
+                                <select className="w-full p-3 bg-slate-50 rounded-xl font-black text-lg outline-none border border-slate-200" value={gameConfig.difficulty} onChange={e => setGameConfig({...gameConfig, difficulty: e.target.value})}>
+                                    <option>Easy</option><option>Medium</option><option>Hard</option>
+                                </select>
                             </div>
                         </div>
-
-                        <div className="space-y-6">
-                            <button onClick={startGame} className="w-full p-10 bg-indigo-600 text-white rounded-[3.5rem] shadow-2xl hover:scale-[1.02] transition-all text-left group">
-                                <div className="text-xs font-black tracking-widest mb-4 opacity-70 uppercase">01 PRACTICE</div>
-                                <h3 className="text-4xl font-black mb-2">Memory Match</h3>
-                                <p className="text-indigo-200 font-bold">Match words to translations or definitions.</p>
-                            </button>
-                            <button onClick={startTest} className="w-full p-10 bg-white text-slate-900 rounded-[3.5rem] shadow-2xl hover:scale-[1.02] transition-all text-left group border-4 border-indigo-600">
-                                <div className="text-xs font-black tracking-widest mb-4 text-indigo-600 uppercase">02 EVALUATE</div>
-                                <h3 className="text-4xl font-black mb-2">Final Test</h3>
-                                <p className="text-slate-400 font-bold">10-question sentence completion test.</p>
-                            </button>
-                            <button onClick={() => setUser(null)} className="w-full py-4 text-indigo-100 font-black tracking-[0.3em] text-xs">LOGOUT SESSION</button>
+                        <div className="space-y-1">
+                            <label className="text-xs font-black text-indigo-500 uppercase ml-1">Mode</label>
+                            <select className="w-full p-3 bg-slate-50 rounded-xl font-black text-lg outline-none border border-slate-200" value={gameConfig.mode} onChange={e => setGameConfig({...gameConfig, mode: e.target.value})}>
+                                <option>English-Arabic</option><option>Word-Definition</option>
+                            </select>
                         </div>
                     </div>
+                    <button onClick={startGame} className="w-full p-6 bg-indigo-600 text-white rounded-[2rem] shadow-lg text-left">
+                        <h3 className="text-2xl font-black">Memory Practice</h3>
+                        <p className="text-indigo-200 text-sm">Review words through matching.</p>
+                    </button>
+                    <button onClick={startTest} className="w-full p-6 bg-white text-indigo-900 rounded-[2rem] shadow-lg text-left border-2 border-indigo-600">
+                        <h3 className="text-2xl font-black">Take a Test</h3>
+                        <p className="text-slate-400 text-sm">10-question graded assessment.</p>
+                    </button>
                 </div>
             );
 
             if (view === 'game') return (
-                <div className="p-6 max-w-7xl mx-auto min-h-screen flex flex-col">
-                    <header className="flex justify-between items-center mb-8 bg-white/20 p-6 rounded-3xl backdrop-blur-md border border-white/30">
-                        <div className="flex flex-col">
-                            <span className="text-sm font-black text-indigo-200 uppercase tracking-widest">Time Remaining</span>
-                            <span className="text-5xl font-black text-white tabular-nums">{formatTimeLabel(timeLeft)}</span>
-                        </div>
-                        <button onClick={() => setView('menu')} className="bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-2xl font-black uppercase text-sm tracking-widest transition-all">Quit</button>
-                        <div className="text-right flex flex-col">
-                            <span className="text-sm font-black text-indigo-200 uppercase tracking-widest">Total Score</span>
-                            <span className="text-5xl font-black text-white tabular-nums">{score}</span>
-                        </div>
-                    </header>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 flex-1">
+                <div className="app-container py-4 flex flex-col h-screen">
+                    <div className="flex justify-between items-center mb-4 bg-white/20 p-4 rounded-2xl">
+                        <span className="text-white font-black text-xl">{formatTimeLabel(timeLeft)}</span>
+                        <button onClick={() => setView('menu')} className="text-white font-bold text-xs uppercase bg-black/20 px-3 py-1 rounded-full">Quit</button>
+                        <span className="text-white font-black text-xl">Score: {score}</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 flex-1 pb-10">
                         {cards.map((card, i) => {
                             const show = flipped.includes(i) || matched.includes(card.id);
                             return (
-                                <div key={card.uid} onClick={() => handleCardClick(i)} className="aspect-[3/2] perspective-1000">
-                                    <div className={`card-inner ${show ? 'card-flipped' : ''}`}>
-                                        <div className="card-front text-7xl font-black">?</div>
-                                        <div className={`card-back ${matched.includes(card.id) ? 'bg-emerald-500 border-emerald-400 text-white' : 'bg-white border-indigo-600 text-indigo-900'}`}>
-                                            <span className={`font-black uppercase tracking-tight leading-tight ${card.isAr ? 'arabic text-3xl' : 'text-xl'}`}>{card.text}</span>
+                                <div key={card.uid} onClick={() => {
+                                    if (isGameOver || flipped.length === 2 || flipped.includes(i) || matched.includes(card.id)) return;
+                                    const next = [...flipped, i]; setFlipped(next);
+                                    if (next.length === 2) {
+                                        const c1 = cards[next[0]], c2 = cards[next[1]];
+                                        if (c1.id === c2.id && c1.type !== c2.type) {
+                                            const newMatched = [...matched, c1.id];
+                                            setMatched(newMatched); 
+                                            setScore(s => s + 10); 
+                                            setFlipped([]);
+                                            if (newMatched.length === cards.length/2) {
+                                                setIsGameOver(true);
+                                                triggerSync({ "Mode": "Memory Game", "Score": score + 10, "Time": formatTimeLabel(timeLeft) });
+                                            }
+                                        } else { setTimeout(() => setFlipped([]), 1000); }
+                                    }
+                                }} className="aspect-[4/3] perspective-1000">
+                                    <div className={`card-inner ${show ? 'card-flipped' : ''} h-full`}>
+                                        <div className="card-front text-4xl font-black">?</div>
+                                        <div className={`card-back ${matched.includes(card.id) ? 'bg-emerald-500 border-emerald-400 text-white' : 'text-indigo-900'}`}>
+                                            <span className={`font-black uppercase text-base ${card.isAr ? 'arabic text-xl' : ''}`}>{card.text}</span>
                                         </div>
                                     </div>
                                 </div>
                             );
                         })}
                     </div>
-
                     {isGameOver && (
-                        <div className="fixed inset-0 bg-indigo-950/95 flex items-center justify-center p-6 z-50">
-                            <div className="bg-white rounded-[4rem] p-16 text-center max-w-xl w-full shadow-2xl">
-                                <h2 className="text-6xl font-black text-indigo-900 mb-4">Well Done!</h2>
-                                <p className="text-2xl font-bold text-slate-400 mb-10">Memory Training Complete.</p>
-                                <div className="grid grid-cols-2 gap-8 mb-12">
-                                    <div className="bg-slate-50 p-8 rounded-[2.5rem]">
-                                        <div className="text-sm font-black text-slate-400 uppercase tracking-widest mb-2">Score</div>
-                                        <div className="text-7xl font-black text-indigo-600">{score}</div>
-                                    </div>
-                                    <div className="bg-slate-50 p-8 rounded-[2.5rem]">
-                                        <div className="text-sm font-black text-slate-400 uppercase tracking-widest mb-2">Time Used</div>
-                                        <div className="text-7xl font-black text-indigo-600">{formatTimeLabel(totalTimeLimit - timeLeft)}</div>
-                                    </div>
-                                </div>
-                                <div className="space-y-4">
-                                    <button onClick={startGame} className="w-full py-6 bg-indigo-600 text-white rounded-3xl font-black text-2xl uppercase hover:bg-indigo-700 transition-all">Play Again</button>
-                                    <button onClick={() => setView('menu')} className="w-full py-6 text-slate-400 font-black text-lg hover:text-indigo-600 transition-all">Back to Menu</button>
-                                </div>
+                        <div className="fixed inset-0 bg-indigo-950/90 flex items-center justify-center p-6 z-50">
+                            <div className="bg-white rounded-[2rem] p-8 text-center w-full max-w-sm">
+                                <h2 className="text-3xl font-black text-indigo-900 mb-2">Well Done!</h2>
+                                <div className="text-6xl font-black text-indigo-600 mb-6">{score}</div>
+                                <button onClick={startGame} className="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold mb-3 text-lg">Try Again</button>
+                                <button onClick={() => setView('menu')} className="text-slate-400 font-bold uppercase text-xs">Return to Main Menu</button>
                             </div>
                         </div>
                     )}
@@ -385,67 +356,63 @@
             );
 
             if (view === 'test') return (
-                <div className="p-6 max-w-4xl mx-auto min-h-screen">
-                    <div className="bg-white/95 rounded-[4rem] shadow-2xl p-12 mb-20">
-                        <header className="flex justify-between items-center mb-16 border-b pb-10">
+                <div className="app-container py-4">
+                    <div className="bg-white rounded-[2rem] shadow-xl p-8 mb-10 min-h-[80vh]">
+                        <header className="flex justify-between items-end mb-8 border-b-2 border-slate-100 pb-4">
                             <div>
-                                <h2 className="text-5xl font-black text-indigo-950 uppercase tracking-tighter">Vocabulary Test</h2>
-                                <p className="text-xl font-bold text-slate-400 uppercase tracking-widest mt-2">List {gameConfig.list}</p>
+                                <h2 className="text-2xl font-black text-indigo-950 uppercase">LIST {gameConfig.list} TEST</h2>
+                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Assessment</p>
                             </div>
-                            <div className="text-right">
-                                <span className="text-sm font-black text-indigo-400 uppercase block mb-1">Time Remaining</span>
-                                <span className={`text-6xl font-black tabular-nums ${timeLeft < 30 ? 'text-red-600 animate-pulse' : 'text-slate-900'}`}>{formatTimeLabel(timeLeft)}</span>
-                            </div>
+                            <span className="text-3xl font-black text-indigo-600 tabular-nums">{formatTimeLabel(timeLeft)}</span>
                         </header>
 
-                        <div className="space-y-20">
-                            {testQuestions.map((q, idx) => (
-                                <div key={q.id} className="relative">
-                                    <div className="flex items-center gap-6 mb-8">
-                                        <span className="w-16 h-16 rounded-3xl bg-indigo-600 text-white flex items-center justify-center text-2xl font-black">{idx + 1}</span>
-                                        <div className="h-0.5 flex-1 bg-slate-100"></div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <h3 className="text-3xl font-black text-indigo-950 leading-relaxed">
-                                            {q.sentence.split('___')[0]}
-                                            <span className="inline-block mx-2 w-48 border-b-4 border-indigo-600 h-1"></span>
-                                            {q.sentence.split('___')[1]}
-                                        </h3>
-                                        <div className="grid grid-cols-2 gap-4 mt-6">
-                                            {q.options.map(opt => (
-                                                <button
-                                                    key={opt}
-                                                    onClick={() => setTestAnswers({...testAnswers, [q.id]: opt})}
-                                                    className={`p-6 rounded-3xl text-left font-black text-xl border-4 transition-all ${
-                                                        testAnswers[q.id] === opt 
-                                                        ? 'bg-indigo-600 border-indigo-600 text-white' 
-                                                        : 'bg-slate-50 border-transparent text-slate-600 hover:border-indigo-200'
-                                                    }`}
-                                                >
-                                                    {opt}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
                         {testResult === null ? (
-                            <button 
-                                onClick={submitTest}
-                                className="w-full mt-24 py-10 bg-indigo-600 text-white rounded-[3rem] font-black text-4xl shadow-2xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-6"
-                            >
-                                {syncing && <div className="spinner"></div>}
-                                FINISH TEST
-                            </button>
+                            <div className="space-y-12">
+                                {testQuestions.map((q, idx) => (
+                                    <div key={q.id} className="space-y-4">
+                                        <div className="flex items-center gap-3 text-indigo-500 font-black text-sm uppercase">
+                                            <span className="bg-indigo-100 px-3 py-1 rounded-lg">Question {idx + 1}</span>
+                                            <div className="h-[2px] flex-1 bg-slate-100"></div>
+                                        </div>
+                                        {q.type === 'multiple' ? (
+                                            <div className="space-y-5">
+                                                <p className="text-2xl font-bold text-slate-800 leading-snug">
+                                                    {q.sentence.replace('___', '__________')}
+                                                </p>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    {q.options.map(opt => (
+                                                        <button key={opt} onClick={() => setTestAnswers({...testAnswers, [q.id]: opt})} className={`p-4 rounded-xl text-lg font-black border-2 transition-all ${testAnswers[q.id] === opt ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-slate-50 border-transparent text-slate-600'}`}>{opt}</button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-4">
+                                                <p className="text-2xl font-bold text-slate-800 leading-relaxed">
+                                                    {q.sentence.split('___')[0]}
+                                                    <select className="gap-select" value={testAnswers[q.id] || ""} onChange={(e) => setTestAnswers({...testAnswers, [q.id]: e.target.value})}>
+                                                        <option value="" disabled>---</option>
+                                                        {q.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                                    </select>
+                                                    {q.sentence.split('___')[1]}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                                <button onClick={submitTest} className="w-full py-6 bg-indigo-600 text-white rounded-2xl font-black text-2xl shadow-lg flex items-center justify-center gap-4 hover:bg-indigo-700 transition-all">
+                                    {syncing && <div className="spinner"></div>} SUBMIT TEST
+                                </button>
+                            </div>
                         ) : (
-                            <div className="mt-24 p-12 bg-slate-900 rounded-[4rem] text-white text-center">
-                                <div className="text-xs font-black tracking-[0.4em] uppercase text-indigo-400 mb-6">Final Assessment</div>
-                                <div className="text-[12rem] font-black leading-none mb-6">{testResult}<span className="text-4xl text-slate-600">/100</span></div>
-                                <p className="text-2xl font-bold text-slate-400 mb-12">Student: {user.name}<br/>Class: {user.className}</p>
-                                <button onClick={() => setView('menu')} className="w-full py-8 bg-white text-slate-900 rounded-3xl font-black text-2xl uppercase tracking-tighter hover:bg-slate-100 transition-all">Back to Dashboard</button>
+                            <div className="text-center py-10">
+                                <div className="text-xs font-black text-indigo-400 uppercase tracking-widest mb-2">Final Score</div>
+                                <div className="text-[9rem] font-black text-indigo-900 leading-none mb-6">{testResult}</div>
+                                <div className="bg-indigo-50 p-8 rounded-[2.5rem] mb-10 border-2 border-indigo-100">
+                                    <p className="text-indigo-950 font-black text-2xl italic leading-tight">
+                                        "{getEncouragement(testResult)}"
+                                    </p>
+                                </div>
+                                <button onClick={() => setView('menu')} className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xl uppercase tracking-wider">Return to Main Menu</button>
                             </div>
                         )}
                     </div>
