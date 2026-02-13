@@ -29,21 +29,18 @@
             border-radius: 1rem;
             padding: 0.75rem;
             text-align: center;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         .card-back { transform: rotateY(180deg); }
-        
         .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top: 3px solid #fff;
-            width: 20px;
-            height: 20px;
+            border-top: 2px solid #fff;
+            width: 16px;
+            height: 16px;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .progress-bar { transition: width 1s linear; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen">
@@ -64,368 +61,258 @@
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect, useRef } from 'react';
         import ReactDOM from 'react-dom';
-        import { GoogleGenAI } from "@google/genai";
 
-        const apiKey = ""; 
         const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycby7FIHOhY5F-1Be-TKeDZpVpIXoAitIpXoMBXCncRgKXG_by0-ADK8yxifRol_sAnpE4g/exec';
 
         const VOCAB_LISTS = {
             A: [
-                { id: 101, en: "Challenge", ar: "تحدي", def: "A task that tests abilities" },
-                { id: 102, en: "Support", ar: "دعم", def: "To give assistance" },
-                { id: 103, en: "Significant", ar: "هام", def: "Great or important" },
-                { id: 104, en: "Analyze", ar: "يحلل", def: "Examine in detail" },
-                { id: 105, en: "Potential", ar: "إمكانية", def: "Capacity to develop" },
-                { id: 106, en: "Structure", ar: "هيكل", def: "Arrangement of parts" },
-                { id: 107, en: "Evidence", ar: "دليل", def: "Facts indicating truth" },
-                { id: 108, en: "Focus", ar: "تركيز", def: "Center of interest" },
-                { id: 109, en: "Assume", ar: "يفترض", def: "Suppose without proof" },
-                { id: 110, en: "Benefit", ar: "فائدة", def: "An advantage gained" },
-                { id: 111, en: "Approach", ar: "نهج", def: "A way of dealing with something" },
-                { id: 112, en: "Create", ar: "يخلق", def: "Bring into existence" }
+                { id: 1, en: "Analyze", ar: "يحلل", def: "Examine in detail" },
+                { id: 2, en: "Approach", ar: "نهج", def: "A way of dealing with something" },
+                { id: 3, en: "Assume", ar: "يفترض", def: "Suppose without proof" },
+                { id: 4, en: "Benefit", ar: "فائدة", def: "An advantage gained" },
+                { id: 5, en: "Concept", ar: "مفهوم", def: "An abstract idea" },
+                { id: 6, en: "Context", ar: "سياق", def: "Circumstances of an event" },
+                { id: 7, en: "Data", ar: "بيانات", def: "Facts and statistics" },
+                { id: 8, en: "Establish", ar: "يؤسس", def: "Set up on a firm basis" },
+                { id: 9, en: "Factor", ar: "عامل", def: "A circumstance that contributes" },
+                { id: 10, en: "Identify", ar: "يحدد", def: "Establish who or what" }
             ],
             B: [
-                { id: 201, en: "Conclude", ar: "يستنتج", def: "Bring to an end" },
-                { id: 202, en: "Vary", ar: "يتنوع", def: "Differ in size/amount" },
-                { id: 203, en: "Constant", ar: "ثابت", def: "Occurring continuously" },
-                { id: 204, en: "Evaluate", ar: "يقيم", def: "Assess value or quality" },
-                { id: 205, en: "Function", ar: "وظيفة", def: "Activity or purpose" },
-                { id: 206, en: "Identify", ar: "يحدد", def: "Establish who/what it is" },
-                { id: 207, en: "Interpret", ar: "يفسر", def: "Explain the meaning" },
-                { id: 208, en: "Method", ar: "طريقة", def: "A procedure to follow" },
-                { id: 209, en: "Period", ar: "فترة", def: "A length of time" },
-                { id: 210, en: "Proceed", ar: "يستمر", def: "Begin or continue action" }
+                { id: 11, en: "Interpret", ar: "يفسر", def: "Explain the meaning" },
+                { id: 12, en: "Method", ar: "طريقة", def: "A procedure to follow" },
+                { id: 13, en: "Period", ar: "فترة", def: "A length of time" },
+                { id: 14, en: "Policy", ar: "سياسة", def: "Course of action adopted" },
+                { id: 15, en: "Process", ar: "عملية", def: "Series of actions" },
+                { id: 16, en: "Role", ar: "دور", def: "Function assumed by a person" },
+                { id: 17, en: "Section", ar: "قسم", def: "Distinct group or part" },
+                { id: 18, en: "Source", ar: "مصدر", def: "Place something comes from" },
+                { id: 19, en: "Theory", ar: "نظرية", def: "System of ideas" },
+                { id: 20, en: "Vary", ar: "يتنوع", def: "Differ in size or amount" }
             ],
             C: [
-                { id: 301, en: "Alternative", ar: "بديل", def: "One of two or more available possibilities" },
-                { id: 302, en: "Circumstance", ar: "ظرف", def: "A fact or condition connected with an event" },
-                { id: 303, en: "Component", ar: "مكون", def: "A part or element of a larger whole" },
-                { id: 304, en: "Consent", ar: "موافقة", def: "Permission for something to happen" },
-                { id: 305, en: "Considerable", ar: "كبير", def: "Notably large in size, amount, or extent" },
-                { id: 306, en: "Constant", ar: "ثابت", def: "Occurring continuously over a period of time" },
-                { id: 307, en: "Core", ar: "قلب / جوهر", def: "The central or most important part" },
-                { id: 308, en: "Criteria", ar: "معايير", def: "A principle or standard by which something is judged" },
-                { id: 309, en: "Deduce", ar: "يستنتج", def: "Arrive at a fact by reasoning" },
-                { id: 310, en: "Demonstrate", ar: "يوضح", def: "Clearly show the existence or truth of" }
+                { id: 21, en: "Acquire", ar: "يكتسب", def: "Buy or obtain for oneself" },
+                { id: 22, en: "Category", ar: "فئة", def: "A class or division of people/things" },
+                { id: 23, en: "Complex", ar: "معقد", def: "Consisting of many different parts" },
+                { id: 24, en: "Culture", ar: "ثقافة", def: "Ideas and customs of a society" },
+                { id: 25, en: "Design", ar: "يصمم", def: "A plan or drawing of something" },
+                { id: 26, en: "Element", ar: "عنصر", def: "A part or aspect of something" },
+                { id: 27, en: "Focus", ar: "تركيز", def: "The center of interest or activity" },
+                { id: 28, en: "Impact", ar: "تأثير", def: "The action of one object hitting another" },
+                { id: 29, en: "Maintain", ar: "يحافظ", def: "Keep something at the same level" },
+                { id: 30, en: "Potential", ar: "إمكانية", def: "Having the capacity to develop" }
             ],
             D: [
-                { id: 401, en: "Outcome", ar: "نتيجة", def: "The way a thing turns out; a consequence" },
-                { id: 402, en: "Philosophy", ar: "فلسفة", def: "The study of the fundamental nature of knowledge" },
-                { id: 403, en: "Proportion", ar: "نسبة", def: "A part, share, or number considered in comparative relation" },
-                { id: 404, en: "Sequence", ar: "تسلسل", def: "A particular order in which related events follow each other" },
-                { id: 405, en: "Shift", ar: "تحول", def: "Move or cause to move from one place to another" },
-                { id: 406, en: "Sufficient", ar: "كاف", def: "Enough; adequate" },
-                { id: 407, en: "Technical", ar: "تقني", def: "Relating to a particular subject, art, or craft" },
-                { id: 408, en: "Validity", ar: "صلاحية", def: "The quality of being logically or factually sound" },
-                { id: 409, en: "Volume", ar: "حجم", def: "The amount of space that a substance occupies" },
-                { id: 410, en: "Coordinate", ar: "ينسق", def: "Bring elements into relationship" }
+                { id: 31, en: "Relevant", ar: "ذو صلة", def: "Closely connected to the matter" },
+                { id: 32, en: "Select", ar: "يختار", def: "Carefully choose as being the best" },
+                { id: 33, en: "Transfer", ar: "ينقل", def: "Move from one place to another" },
+                { id: 34, en: "Utility", ar: "منفعة", def: "The state of being useful or profitable" },
+                { id: 35, en: "Volume", ar: "حجم", def: "The amount of space occupied" },
+                { id: 36, en: "Primary", ar: "أساسي", def: "Of chief importance; principal" },
+                { id: 37, en: "Reaction", ar: "رد فعل", def: "An action performed in response" },
+                { id: 38, en: "Strategy", ar: "استراتيجية", def: "A plan of action to achieve a goal" },
+                { id: 39, en: "Task", ar: "مهمة", def: "A piece of work to be done" },
+                { id: 40, en: "View", ar: "رؤية", def: "The ability to see something" }
             ]
         };
 
         const App = () => {
             const [user, setUser] = useState(null);
-            const [gameConfig, setGameConfig] = useState({
-                difficulty: 'Medium',
-                list: 'A',
-                mode: 'English-Arabic'
-            });
-
+            const [gameConfig, setGameConfig] = useState({ difficulty: 'Medium', list: 'A', mode: 'English-Arabic' });
+            
+            const userRef = useRef(null);
+            const configRef = useRef(null);
+            
             const [cards, setCards] = useState([]);
             const [flipped, setFlipped] = useState([]);
             const [matched, setMatched] = useState([]);
-            const [hint, setHint] = useState("");
-            const [loadingHint, setLoadingHint] = useState(false);
             const [score, setScore] = useState(0);
             const [timeLeft, setTimeLeft] = useState(0);
-            const [totalTime, setTotalTime] = useState(120);
-            const [timeTaken, setTimeTaken] = useState(0);
+            const [totalTimeLimit, setTotalTimeLimit] = useState(0);
             const [isGameOver, setIsGameOver] = useState(false);
             const [syncing, setSyncing] = useState(false);
             const timerRef = useRef(null);
 
-            // Sync with Google Sheets
-            const syncResults = async (finalScore, finalTime) => {
-                if (!user) return;
+            const formatTimeLabel = (totalSeconds) => {
+                const m = Math.floor(totalSeconds / 60);
+                const s = totalSeconds % 60;
+                return `${m}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const sendToSheets = async (finalScore, secondsSpent) => {
+                const u = userRef.current;
+                const c = configRef.current;
+                if (!u) return;
+
                 setSyncing(true);
-                
                 const payload = {
-                    timestamp: new Date().toISOString(),
-                    studentName: user.name,
-                    class: user.className,
-                    score: finalScore,
-                    time: formatTime(finalTime),
-                    list: gameConfig.list,
-                    difficulty: gameConfig.difficulty,
-                    mode: gameConfig.mode
+                    "Timestamp": new Date().toLocaleString(),
+                    "Student Name": u.name,
+                    "Class": u.className,
+                    "Score": finalScore,
+                    "Time": formatTimeLabel(secondsSpent),
+                    "List": c.list,
+                    "Difficulty": c.difficulty,
+                    "Mode": c.mode
                 };
 
                 try {
-                    // Use no-cors or standard fetch depending on your script settings
-                    // Usually Apps Script works best with standard fetch if it returns JSON
                     await fetch(GOOGLE_SHEET_URL, {
                         method: 'POST',
-                        mode: 'no-cors', // standard for cross-domain apps script if not specifically configured
+                        mode: 'no-cors',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
-                } catch (error) {
-                    console.error("Sync error:", error);
+                } catch (e) {
+                    console.error("Sheet sync failed", e);
                 } finally {
                     setSyncing(false);
                 }
             };
 
-            useEffect(() => {
-                if (user && !isGameOver && timeLeft > 0) {
-                    timerRef.current = setInterval(() => {
-                        setTimeLeft(prev => {
-                            if (prev <= 1) {
-                                clearInterval(timerRef.current);
-                                const finalT = totalTime;
-                                setTimeTaken(finalT);
-                                setIsGameOver(true);
-                                syncResults(score, finalT);
-                                return 0;
-                            }
-                            return prev - 1;
-                        });
-                    }, 1000);
-                }
-                return () => clearInterval(timerRef.current);
-            }, [user, isGameOver, timeLeft, score, totalTime]);
-
             const handleLogin = (e) => {
                 e.preventDefault();
                 const name = e.target.studentName.value;
-                const cls = e.target.className.value;
-                if (name && cls) {
-                    setUser({ name, className: cls });
-                    startGame();
-                }
+                const className = e.target.className.value;
+                const newUser = { name, className };
+                userRef.current = newUser;
+                configRef.current = gameConfig;
+                setUser(newUser);
+                startGame();
             };
 
             const startGame = () => {
-                const fullList = VOCAB_LISTS[gameConfig.list];
-                const baseTime = gameConfig.difficulty === 'Easy' ? 180 : gameConfig.difficulty === 'Medium' ? 120 : 60;
+                const list = VOCAB_LISTS[gameConfig.list] || VOCAB_LISTS.A;
+                const duration = gameConfig.difficulty === 'Easy' ? 180 : gameConfig.difficulty === 'Medium' ? 120 : 60;
                 
-                setTimeLeft(baseTime);
-                setTotalTime(baseTime);
-                setTimeTaken(0);
+                setTotalTimeLimit(duration);
+                setTimeLeft(duration);
                 setIsGameOver(false);
                 setScore(0);
                 setMatched([]);
                 setFlipped([]);
-                setHint("");
 
-                const selection = [...fullList].sort(() => Math.random() - 0.5).slice(0, 10);
-                
-                const gameCards = [];
-                selection.forEach(item => {
-                    gameCards.push({ id: item.id, content: item.en, lang: 'en', type: 'term', uniqueId: `term-${item.id}` });
-                    const sideB = gameConfig.mode === 'English-Arabic' ? item.ar : item.def;
-                    const sideBLang = gameConfig.mode === 'English-Arabic' ? 'ar' : 'def';
-                    gameCards.push({ id: item.id, content: sideB, lang: sideBLang, type: 'match', uniqueId: `match-${item.id}` });
+                const subset = [...list].sort(() => Math.random() - 0.5).slice(0, 10);
+                const newCards = [];
+                subset.forEach(item => {
+                    newCards.push({ id: item.id, text: item.en, type: 'en', uid: `e-${item.id}` });
+                    const matchText = gameConfig.mode === 'English-Arabic' ? item.ar : item.def;
+                    newCards.push({ id: item.id, text: matchText, type: 'match', uid: `m-${item.id}`, isAr: gameConfig.mode === 'English-Arabic' });
                 });
-
-                setCards(gameCards.sort(() => Math.random() - 0.5));
+                setCards(newCards.sort(() => Math.random() - 0.5));
             };
 
-            const handleCardClick = (index) => {
-                if (isGameOver || flipped.length === 2 || flipped.includes(index) || matched.includes(cards[index].id)) return;
-                
-                const newFlipped = [...flipped, index];
-                setFlipped(newFlipped);
-
-                if (newFlipped.length === 2) {
-                    const first = cards[newFlipped[0]];
-                    const second = cards[newFlipped[1]];
-
-                    if (first.id === second.id && first.type !== second.type) {
-                        const newScore = score + 10;
-                        setMatched(prev => {
-                            const newMatched = [...prev, first.id];
-                            if (newMatched.length === 10) {
+            useEffect(() => {
+                if (user && !isGameOver && timeLeft > 0) {
+                    timerRef.current = setInterval(() => {
+                        setTimeLeft(t => {
+                            if (t <= 1) {
                                 clearInterval(timerRef.current);
-                                const finalT = totalTime - timeLeft;
-                                setTimeTaken(finalT);
                                 setIsGameOver(true);
-                                syncResults(newScore, finalT);
+                                sendToSheets(score, totalTimeLimit);
+                                return 0;
                             }
-                            return newMatched;
+                            return t - 1;
                         });
+                    }, 1000);
+                }
+                return () => clearInterval(timerRef.current);
+            }, [user, isGameOver]);
+
+            const handleCardClick = (idx) => {
+                if (isGameOver || flipped.length === 2 || flipped.includes(idx) || matched.includes(cards[idx].id)) return;
+                
+                const nextFlipped = [...flipped, idx];
+                setFlipped(nextFlipped);
+
+                if (nextFlipped.length === 2) {
+                    const c1 = cards[nextFlipped[0]];
+                    const c2 = cards[nextFlipped[1]];
+
+                    if (c1.id === c2.id && c1.type !== c2.type) {
+                        const newMatched = [...matched, c1.id];
+                        const newScore = score + 10;
+                        setMatched(newMatched);
                         setScore(newScore);
                         setFlipped([]);
+
+                        if (newMatched.length === 10) {
+                            clearInterval(timerRef.current);
+                            setIsGameOver(true);
+                            sendToSheets(newScore, totalTimeLimit - timeLeft);
+                        }
                     } else {
                         setTimeout(() => setFlipped([]), 1000);
                     }
                 }
             };
 
-            const getHint = async () => {
-                const currentList = VOCAB_LISTS[gameConfig.list];
-                const nextId = cards.find(c => !matched.includes(c.id))?.id;
-                const item = currentList.find(v => v.id === nextId);
-                
-                if (!item || loadingHint) return;
-
-                setLoadingHint(true);
-                try {
-                    const genAI = new GoogleGenAI(apiKey);
-                    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-                    const prompt = `Write a simple fill-in-the-blanks sentence for the word "${item.en}". Use "___" instead of the word.`;
-                    const result = await model.generateContent(prompt);
-                    setHint(result.response.text());
-                } catch (err) {
-                    setHint(`Hint: Look for "${item.en}"`);
-                } finally {
-                    setLoadingHint(false);
-                }
-            };
-
-            const formatTime = (seconds) => {
-                const m = Math.floor(seconds / 60);
-                const s = seconds % 60;
-                return `${m}:${s.toString().padStart(2, '0')}`;
-            };
-
             if (!user) {
                 return (
                     <div className="min-h-screen flex items-center justify-center bg-indigo-900 p-6">
-                        <div className="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-2 bg-indigo-500"></div>
-                            <div className="text-center mb-8">
-                                <h1 className="text-4xl font-black text-slate-800 tracking-tighter uppercase italic leading-none">Vocab Master</h1>
-                                <p className="text-slate-400 font-bold text-[10px] tracking-widest mt-2">10 WORDS • 100 POINTS MAX</p>
-                            </div>
-
+                        <div className="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl">
+                            <h1 className="text-2xl font-black text-center mb-6 italic uppercase tracking-tight text-slate-800">Vocab Master</h1>
                             <form onSubmit={handleLogin} className="space-y-4">
-                                <input name="studentName" required className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-indigo-500 outline-none transition-all font-semibold" placeholder="Student Name" />
-                                <input name="className" required className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-indigo-500 outline-none transition-all font-semibold" placeholder="Class / Section" />
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Timer</label>
-                                        <select value={gameConfig.difficulty} onChange={(e) => setGameConfig({...gameConfig, difficulty: e.target.value})} className="w-full px-4 py-3 bg-slate-100 rounded-xl outline-none font-bold text-slate-600">
-                                            <option>Easy</option><option>Medium</option><option>Hard</option>
-                                        </select>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Set</label>
-                                        <select value={gameConfig.list} onChange={(e) => setGameConfig({...gameConfig, list: e.target.value})} className="w-full px-4 py-3 bg-slate-100 rounded-xl outline-none font-bold text-slate-600">
-                                            <option value="A">List A</option><option value="B">List B</option><option value="C">List C</option><option value="D">List D</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-1">
-                                    <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Mode</label>
-                                    <select value={gameConfig.mode} onChange={(e) => setGameConfig({...gameConfig, mode: e.target.value})} className="w-full px-4 py-3 bg-slate-100 rounded-xl outline-none font-bold text-slate-600">
-                                        <option>English-Arabic</option><option>Word-Definition</option>
+                                <input name="studentName" required placeholder="Full Name" className="w-full p-4 bg-slate-50 border rounded-xl font-bold" />
+                                <input name="className" required placeholder="Class Name (e.g. 10B)" className="w-full p-4 bg-slate-50 border rounded-xl font-bold" />
+                                <div className="grid grid-cols-2 gap-2">
+                                    <select className="p-3 bg-slate-100 rounded-xl font-bold" onChange={e => setGameConfig({...gameConfig, list: e.target.value})}>
+                                        <option value="A">List A</option>
+                                        <option value="B">List B</option>
+                                        <option value="C">List C</option>
+                                        <option value="D">List D</option>
+                                    </select>
+                                    <select className="p-3 bg-slate-100 rounded-xl font-bold" onChange={e => setGameConfig({...gameConfig, difficulty: e.target.value})} defaultValue="Medium">
+                                        <option>Easy</option><option>Medium</option><option>Hard</option>
                                     </select>
                                 </div>
-
-                                <button type="submit" className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black text-xl hover:bg-indigo-700 shadow-xl shadow-indigo-100 transition-all active:scale-95">
-                                    PLAY GAME
-                                </button>
+                                <select className="w-full p-3 bg-slate-100 rounded-xl font-bold" onChange={e => setGameConfig({...gameConfig, mode: e.target.value})}>
+                                    <option>English-Arabic</option><option>Word-Definition</option>
+                                </select>
+                                <button className="w-full py-4 bg-indigo-600 text-white rounded-xl font-black text-lg active:scale-95 transition-transform mt-4">START GAME</button>
                             </form>
                         </div>
                     </div>
                 );
             }
 
-            const timePercent = (timeLeft / totalTime) * 100;
-
             return (
-                <div className="flex flex-col min-h-screen bg-slate-50">
-                    <div className="h-1.5 w-full bg-slate-200 sticky top-0 z-30">
-                        <div className={`h-full progress-bar ${timeLeft < 20 ? 'bg-red-500' : 'bg-indigo-500'}`} style={{ width: `${timePercent}%` }}></div>
+                <div className="flex flex-col min-h-screen">
+                    <div className="h-1.5 w-full bg-slate-200">
+                        <div className="h-full bg-indigo-600 transition-all duration-1000" style={{ width: `${(timeLeft/totalTimeLimit)*100}%` }}></div>
                     </div>
-
-                    <header className="bg-white border-b p-4 sticky top-1 z-20 shadow-sm">
-                        <div className="max-w-6xl mx-auto flex justify-between items-center">
-                            <div className="flex items-center gap-4">
-                                <div className={`text-2xl font-black tabular-nums ${timeLeft < 20 ? 'text-red-500 animate-pulse' : 'text-slate-800'}`}>
-                                    {formatTime(timeLeft)}
-                                </div>
-                                <div className="hidden sm:block">
-                                    <h2 className="text-xs font-black text-indigo-600 uppercase tracking-tighter leading-none">{user.name}</h2>
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase">{user.className} • List {gameConfig.list}</p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-6">
-                                <div className="text-center">
-                                    <div className="text-2xl font-black text-indigo-600 leading-none">{score}</div>
-                                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Score</div>
-                                </div>
-                                <button onClick={getHint} disabled={loadingHint || isGameOver} className="bg-amber-400 w-12 h-12 rounded-2xl flex items-center justify-center hover:bg-amber-500 disabled:opacity-30 shadow-lg shadow-amber-50">
-                                    {loadingHint ? <div className="spinner !border-amber-900 !border-t-transparent"></div> : <span className="text-xl">💡</span>}
-                                </button>
-                            </div>
+                    <header className="bg-white p-4 border-b flex justify-between items-center px-6">
+                        <div className="text-xl font-black tabular-nums text-slate-700">{formatTimeLabel(timeLeft)}</div>
+                        <div className="text-center">
+                            <div className="text-xs font-black text-slate-400 uppercase">Score</div>
+                            <div className="text-xl font-black text-indigo-600">{score}</div>
                         </div>
                     </header>
 
-                    <main className="flex-1 p-6 max-w-6xl mx-auto w-full">
-                        {hint && (
-                            <div className="bg-indigo-50 border-2 border-indigo-100 p-5 mb-8 rounded-[2rem] text-center shadow-sm">
-                                <p className="text-indigo-900 font-medium italic text-lg leading-relaxed">{hint}</p>
-                            </div>
-                        )}
-
-                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                            {cards.map((card, idx) => {
-                                const isFlipped = flipped.includes(idx) || matched.includes(card.id);
-                                return (
-                                    <div key={card.uniqueId} onClick={() => handleCardClick(idx)} className="aspect-[4/3] perspective-1000 cursor-pointer group">
-                                        <div className={`card-inner ${isFlipped ? 'flipped' : ''}`}>
-                                            <div className="card-face bg-white border-2 border-slate-100 group-hover:border-indigo-200 transition-colors">
-                                                <div className="text-3xl font-black text-slate-100 uppercase italic">?</div>
-                                            </div>
-                                            <div className={`card-face card-back border-2 ${
-                                                matched.includes(card.id) ? 'bg-emerald-500 border-emerald-400 text-white' : 'bg-white border-indigo-500 text-indigo-600'
-                                            }`}>
-                                                <span className={`font-bold leading-tight ${
-                                                    card.lang === 'ar' ? 'arabic text-2xl' : 
-                                                    card.lang === 'def' ? 'text-[10px] font-semibold leading-snug px-1' : 'text-sm sm:text-lg'
-                                                }`}>
-                                                    {card.content}
-                                                </span>
-                                            </div>
+                    <main className="flex-1 p-6 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4 max-w-5xl mx-auto w-full">
+                        {cards.map((card, i) => {
+                            const show = flipped.includes(i) || matched.includes(card.id);
+                            return (
+                                <div key={card.uid} onClick={() => handleCardClick(i)} className="aspect-[4/3] perspective-1000 cursor-pointer">
+                                    <div className={`card-inner ${show ? 'flipped' : ''}`}>
+                                        <div className="card-face bg-white border-2 border-slate-100 text-slate-200 font-black text-2xl">?</div>
+                                        <div className={`card-face card-back border-2 ${matched.includes(card.id) ? 'bg-emerald-500 border-emerald-400 text-white' : 'bg-white border-indigo-500 text-indigo-600'}`}>
+                                            <span className={`font-bold ${card.isAr ? 'arabic text-lg' : 'text-xs sm:text-sm'}`}>{card.text}</span>
                                         </div>
                                     </div>
-                                );
-                            })}
-                        </div>
+                                </div>
+                            );
+                        })}
                     </main>
 
                     {isGameOver && (
-                        <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-md flex items-center justify-center z-50 p-6">
-                            <div className="bg-white p-12 rounded-[3.5rem] text-center max-w-md w-full shadow-2xl relative">
-                                {syncing && (
-                                    <div className="absolute top-4 right-4 flex items-center gap-2">
-                                        <div className="spinner !border-indigo-600 !border-t-transparent !w-4 !h-4"></div>
-                                        <span className="text-[10px] font-bold text-indigo-600">SYNCING...</span>
-                                    </div>
-                                )}
-                                <div className="text-7xl mb-6">{matched.length === 10 ? '👑' : '⏳'}</div>
-                                <h2 className="text-4xl font-black text-slate-800 mb-2 uppercase italic leading-none">{matched.length === 10 ? 'Excellent!' : 'Time Up!'}</h2>
-                                
-                                <div className="flex justify-center gap-8 my-8">
-                                    <div className="text-center">
-                                        <div className="text-2xl font-black text-indigo-600">{score} / 100</div>
-                                        <div className="text-[10px] text-slate-400 font-black uppercase">Points</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-2xl font-black text-indigo-600">{formatTime(timeTaken)}</div>
-                                        <div className="text-[10px] text-slate-400 font-black uppercase">Time Taken</div>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <button onClick={startGame} className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black text-xl shadow-xl shadow-indigo-200 active:scale-95 transition-all">TRY AGAIN</button>
-                                    <button onClick={() => setUser(null)} className="w-full py-5 bg-slate-100 text-slate-500 rounded-2xl font-black text-lg hover:bg-slate-200 active:scale-95 transition-all">EXIT GAME</button>
-                                </div>
-                                <p className="mt-6 text-[10px] text-slate-300 font-bold uppercase tracking-tighter">Results are automatically synced with the teacher.</p>
+                        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+                            <div className="bg-white rounded-[2rem] p-10 text-center max-w-sm w-full shadow-2xl relative">
+                                {syncing && <div className="absolute top-4 right-4 flex items-center gap-2"><div className="spinner !border-indigo-600 !border-t-transparent"></div><span className="text-[8px] font-bold text-indigo-600">SYNCING</span></div>}
+                                <h2 className="text-3xl font-black italic uppercase mb-2">Result</h2>
+                                <div className="text-5xl font-black text-indigo-600 my-4">{score}</div>
+                                <div className="text-sm font-bold text-slate-400 mb-8 uppercase tracking-widest">Points Collected</div>
+                                <button onClick={startGame} className="w-full py-4 bg-indigo-600 text-white rounded-xl font-black mb-2">PLAY AGAIN</button>
+                                <button onClick={() => setUser(null)} className="w-full py-4 bg-slate-100 text-slate-400 rounded-xl font-black">EXIT</button>
                             </div>
                         </div>
                     )}
