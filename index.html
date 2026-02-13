@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Band III Vocab Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
         .arabic { font-family: 'Cairo', sans-serif; }
@@ -42,6 +42,15 @@
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.2rem;
+            padding-right: 3rem !important;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen">
@@ -66,72 +75,72 @@
 
         const VOCAB_LISTS = {
             A: [
-                { id: 101, en: "addition", ar: "إضافة", def: "Adding/extension/inclusion" },
-                { id: 102, en: "advance", ar: "تقدم", def: "Progress or discoveries" },
-                { id: 103, en: "advanced", ar: "متقدم", def: "Modern, high level" },
-                { id: 104, en: "advertising", ar: "إعلان", def: "Business of persuading people to buy" },
-                { id: 105, en: "analysis", ar: "تحليل", def: "Examining something carefully" },
-                { id: 106, en: "appear", ar: "يظهر", def: "To start to be seen" },
-                { id: 107, en: "approach", ar: "نهج", def: "Method or way of dealing with something" },
-                { id: 108, en: "average", ar: "معدل", def: "Ordinary or usual" },
-                { id: 109, en: "available", ar: "متاح", def: "Able to be used or obtained" },
-                { id: 110, en: "benefit", ar: "فائدة", def: "An advantage or profit" },
-                { id: 111, en: "block", ar: "كتلة", def: "Solid piece of hard material" },
-                { id: 112, en: "brief", ar: "مختصر", def: "Lasting a short time" },
-                { id: 113, en: "calculate", ar: "يحسب", def: "Determine mathematically" },
-                { id: 114, en: "campaign", ar: "حملة", def: "Organized course of action" },
-                { id: 115, en: "capital", ar: "عاصمة", def: "Most important city of a country" }
+                { id: 101, en: "addition", ar: "إضافة", def: "Adding/extension/inclusion", sentence: "The new ___ to the building looks great." },
+                { id: 102, en: "advance", ar: "تقدم", def: "Progress or discoveries", sentence: "Technology continues to ___ at a rapid pace." },
+                { id: 103, en: "advanced", ar: "متقدم", def: "Modern, high level", sentence: "She is taking an ___ math course this year." },
+                { id: 104, en: "advertising", ar: "إعلان", def: "Business of persuading people to buy", sentence: "The company spent a lot on ___." },
+                { id: 105, en: "analysis", ar: "تحليل", def: "Examining something carefully", sentence: "The chemical ___ showed high levels of salt." },
+                { id: 106, en: "appear", ar: "يظهر", def: "To start to be seen", sentence: "The sun will ___ from behind the clouds soon." },
+                { id: 107, en: "approach", ar: "نهج", def: "Method or way of dealing with something", sentence: "We need a new ___ to solve this problem." },
+                { id: 108, en: "average", ar: "معدل", def: "Ordinary or usual", sentence: "The ___ student spends two hours on homework." },
+                { id: 109, en: "available", ar: "متاح", def: "Able to be used or obtained", sentence: "Is there any water ___ for the guests?" },
+                { id: 110, en: "benefit", ar: "فائدة", def: "An advantage or profit", sentence: "Regular exercise is a major ___ to your health." },
+                { id: 111, en: "block", ar: "كتلة", def: "Solid piece of hard material", sentence: "He sat on a large ___ of stone." },
+                { id: 112, en: "brief", ar: "مختصر", def: "Lasting a short time", sentence: "The meeting was very ___, lasting only ten minutes." },
+                { id: 113, en: "calculate", ar: "يحسب", def: "Determine mathematically", sentence: "We need to ___ the total cost before buying." },
+                { id: 114, en: "campaign", ar: "حملة", def: "Organized course of action", sentence: "The political ___ lasted for several months." },
+                { id: 115, en: "capital", ar: "عاصمة", def: "Most important city of a country", sentence: "Paris is the ___ of France." }
             ],
             B: [
-                { id: 201, en: "challenge", ar: "تحدي", def: "Something needing great effort" },
-                { id: 202, en: "character", ar: "شخصية", def: "Qualities distinctive to an individual" },
-                { id: 203, en: "circumstance", ar: "ظرف", def: "Fact or condition connected to an event" },
-                { id: 204, en: "collection", ar: "مجموعة", def: "Group of things gathered together" },
-                { id: 205, en: "combine", ar: "يدمج", def: "Join or merge to form a single unit" },
-                { id: 206, en: "common", ar: "شائع", def: "Occurring, found, or done often" },
-                { id: 207, en: "compete", ar: "يتنافس", def: "Strive to gain or win something" },
-                { id: 208, en: "complex", ar: "معقد", def: "Consisting of many different parts" },
-                { id: 209, en: "conclusion", ar: "استنتاج", def: "The end or finish of an event" },
-                { id: 210, en: "confirm", ar: "يؤكد", def: "Establish the truth or correctness" },
-                { id: 211, en: "consequence", ar: "نتيجة", def: "Result or effect of an action" },
-                { id: 212, en: "considerable", ar: "كبير", def: "Great in size, amount, or extent" },
-                { id: 213, en: "constant", ar: "ثابت", def: "Occurring continuously" },
-                { id: 214, en: "contact", ar: "اتصال", def: "Communicating or meeting" },
-                { id: 215, en: "contain", ar: "يحتوي", def: "Have or hold someone or something" }
+                { id: 201, en: "challenge", ar: "تحدي", def: "Something needing great effort", sentence: "Climbing that mountain was a huge ___." },
+                { id: 202, en: "character", ar: "شخصية", def: "Qualities distinctive to an individual", sentence: "Hard work builds a strong ___." },
+                { id: 203, en: "circumstance", ar: "ظرف", def: "Fact or condition connected to an event", sentence: "Under no ___ should you open that door." },
+                { id: 204, en: "collection", ar: "مجموعة", def: "Group of things gathered together", sentence: "He has a large ___ of old coins." },
+                { id: 205, en: "combine", ar: "يدمج", def: "Join or merge to form a single unit", sentence: "You should ___ the flour and sugar together." },
+                { id: 206, en: "common", ar: "شائع", def: "Occurring, found, or done often", sentence: "Colds are more ___ in the winter." },
+                { id: 207, en: "compete", ar: "يتنافس", def: "Strive to gain or win something", sentence: "Athletes from 20 countries will ___ in the race." },
+                { id: 208, en: "complex", ar: "معقد", def: "Consisting of many different parts", sentence: "The brain is a very ___ organ." },
+                { id: 209, en: "conclusion", ar: "استنتاج", def: "The end or finish of an event", sentence: "In ___, I would like to thank you for coming." },
+                { id: 210, en: "confirm", ar: "يؤكد", def: "Establish the truth or correctness", sentence: "Please ___ your reservation by email." },
+                { id: 211, en: "consequence", ar: "نتيجة", def: "Result or effect of an action", sentence: "Every action has a natural ___." },
+                { id: 212, en: "considerable", ar: "كبير", def: "Great in size, amount, or extent", sentence: "She spent a ___ amount of time on the project." },
+                { id: 213, en: "constant", ar: "ثابت", def: "Occurring continuously", sentence: "The baby needs ___ attention." },
+                { id: 214, en: "contact", ar: "اتصال", def: "Communicating or meeting", sentence: "We stayed in ___ after moving away." },
+                { id: 215, en: "contain", ar: "يحتوي", def: "Have or hold someone or something", sentence: "This box should ___ all your toys." }
             ],
             C: [
-                { id: 301, en: "creative", ar: "مبدع", def: "Using imagination to create" },
-                { id: 302, en: "criticism", ar: "نقد", def: "Expression of disapproval" },
-                { id: 303, en: "current", ar: "حالي", def: "Belonging to the present time" },
-                { id: 304, en: "decrease", ar: "ينقص", def: "Make or become smaller" },
-                { id: 305, en: "delay", ar: "تأجيل", def: "Make someone or something late" },
-                { id: 306, en: "deliberate", ar: "متعمد", def: "Done consciously and intentionally" },
-                { id: 307, en: "demonstrate", ar: "يوضح", def: "Show clearly by giving proof" },
-                { id: 308, en: "design", ar: "تصميم", def: "A plan or drawing produced to show look" },
-                { id: 309, en: "despite", ar: "على الرغم من", def: "Without being affected by" },
-                { id: 310, en: "detail", ar: "تفصيل", def: "Individual fact or item" },
-                { id: 311, en: "develop", ar: "يطور", def: "Grow or cause to grow" },
-                { id: 312, en: "device", ar: "جهاز", def: "Thing made for a particular purpose" },
-                { id: 313, en: "difference", ar: "اختلاف", def: "Way in which things are not same" },
-                { id: 314, en: "difficulty", ar: "صعوبة", def: "The state of being hard to do" },
-                { id: 315, en: "direct", ar: "مباشر", def: "Extending in a straight line" }
+                { id: 301, en: "creative", ar: "مبدع", def: "Using imagination to create", sentence: "She is a very ___ artist." },
+                { id: 302, en: "criticism", ar: "نقد", def: "Expression of disapproval", sentence: "The movie received a lot of ___ from the press." },
+                { id: 303, en: "current", ar: "حالي", def: "Belonging to the present time", sentence: "What is your ___ address?" },
+                { id: 304, en: "decrease", ar: "ينقص", def: "Make or become smaller", sentence: "The number of smokers began to ___." },
+                { id: 305, en: "delay", ar: "تأجيل", def: "Make someone or something late", sentence: "The rain caused a long ___ in the flight." },
+                { id: 306, en: "deliberate", ar: "متعمد", def: "Done consciously and intentionally", sentence: "It was a ___ attempt to hurt my feelings." },
+                { id: 307, en: "demonstrate", ar: "يوضح", def: "Show clearly by giving proof", sentence: "Let me ___ how this machine works." },
+                { id: 308, en: "design", ar: "تصميم", def: "A plan or drawing produced to show look", sentence: "I like the ___ of your new house." },
+                { id: 309, en: "despite", ar: "على الرغم من", def: "Without being affected by", sentence: "We went out ___ the heavy rain." },
+                { id: 310, en: "detail", ar: "تفصيل", def: "Individual fact or item", sentence: "The painting is full of intricate ___." },
+                { id: 311, en: "develop", ar: "يطور", def: "Grow or cause to grow", sentence: "Exercise helps you ___ strong muscles." },
+                { id: 312, en: "device", ar: "جهاز", def: "Thing made for a particular purpose", sentence: "A smartphone is a multifunctional ___." },
+                { id: 313, en: "difference", ar: "اختلاف", def: "Way in which things are not same", sentence: "What is the ___ between these two products?" },
+                { id: 314, en: "difficulty", ar: "صعوبة", def: "The state of being hard to do", sentence: "I had some ___ understanding the instructions." },
+                { id: 315, en: "direct", ar: "مباشر", def: "Extending in a straight line", sentence: "Is there a ___ train to the city center?" }
             ],
             D: [
-                { id: 401, en: "effective", ar: "فعال", def: "Successful in producing result" },
-                { id: 402, en: "efficient", ar: "كفء", def: "Working in a well-organized way" },
-                { id: 403, en: "emphasis", ar: "تأكيد", def: "Special importance or value given" },
-                { id: 404, en: "encounter", ar: "يواجه", def: "Unexpectedly experience or meet" },
-                { id: 405, en: "entire", ar: "كامل", def: "With no part left out; whole" },
-                { id: 406, en: "essential", ar: "ضروري", def: "Absolutely necessary; extremely important" },
-                { id: 407, en: "estimate", ar: "يقدر", def: "Roughly calculate or judge" },
-                { id: 408, en: "evidence", ar: "دليل", def: "Facts indicating if something is true" },
-                { id: 409, en: "examine", ar: "يفحص", def: "Inspect someone or something in detail" },
-                { id: 410, en: "exist", ar: "يوجد", def: "Have objective reality or being" },
-                { id: 411, en: "expand", ar: "يتوسع", def: "Become or make larger or more extensive" },
-                { id: 412, en: "experiment", ar: "تجربة", def: "Procedure to make a discovery" },
-                { id: 413, en: "expert", ar: "خبير", def: "Person with comprehensive knowledge" },
-                { id: 414, en: "explore", ar: "يستكشف", def: "Travel in order to learn about it" },
-                { id: 415, en: "feature", ar: "ميزة", def: "Distinctive attribute or aspect" }
+                { id: 401, en: "effective", ar: "فعال", def: "Successful in producing result", sentence: "This medicine is very ___ against the flu." },
+                { id: 402, en: "efficient", ar: "كفء", def: "Working in a well-organized way", sentence: "The new heater is much more ___." },
+                { id: 403, en: "emphasis", ar: "تأكيد", def: "Special importance or value given", sentence: "The school puts a lot of ___ on sports." },
+                { id: 404, en: "encounter", ar: "يواجه", def: "Unexpectedly experience or meet", sentence: "You might ___ some problems early on." },
+                { id: 405, en: "entire", ar: "كامل", def: "With no part left out; whole", sentence: "He ate the ___ pizza by himself." },
+                { id: 406, en: "essential", ar: "ضروري", def: "Absolutely necessary; extremely important", sentence: "Water is ___ for all living things." },
+                { id: 407, en: "estimate", ar: "يقدر", def: "Roughly calculate or judge", sentence: "They ___ that the repair will cost $500." },
+                { id: 408, en: "evidence", ar: "دليل", def: "Facts indicating if something is true", sentence: "There is no ___ that he committed the crime." },
+                { id: 409, en: "examine", ar: "يفحص", def: "Inspect someone or something in detail", sentence: "The doctor will ___ you now." },
+                { id: 410, en: "exist", ar: "يوجد", def: "Have objective reality or being", sentence: "Do you believe that ghosts ___?" },
+                { id: 411, en: "expand", ar: "يتوسع", def: "Become or make larger or more extensive", sentence: "The company plans to ___ into Europe." },
+                { id: 412, en: "experiment", ar: "تجربة", def: "Procedure to make a discovery", sentence: "The science class did a fun ___ today." },
+                { id: 413, en: "expert", ar: "خبير", def: "Person with comprehensive knowledge", sentence: "He is an ___ in ancient history." },
+                { id: 414, en: "explore", ar: "يستكشف", def: "Travel in order to learn about it", sentence: "Let's ___ the forest behind the house." },
+                { id: 415, en: "feature", ar: "ميزة", def: "Distinctive attribute or aspect", sentence: "A unique ___ of this car is its solar roof." }
             ]
         };
 
@@ -145,6 +154,7 @@
 
         const App = () => {
             const [user, setUser] = useState(null);
+            const [view, setView] = useState('login'); 
             const [gameConfig, setGameConfig] = useState({ difficulty: 'Medium', list: 'A', mode: 'English-Arabic' });
             
             const userRef = useRef(null);
@@ -160,9 +170,13 @@
             const [syncing, setSyncing] = useState(false);
             const [finalTimeLabel, setFinalTimeLabel] = useState("");
             const [encouragement, setEncouragement] = useState("");
-            
             const timerRef = useRef(null);
-            const scoreRef = useRef(0); // Add a ref to track current score reliably
+            const scoreRef = useRef(0);
+
+            const [testQuestions, setTestQuestions] = useState([]);
+            const [testAnswers, setTestAnswers] = useState({});
+            const [testResult, setTestResult] = useState(null);
+            const testAnswersRef = useRef({});
 
             const formatTimeLabel = (totalSeconds) => {
                 const m = Math.floor(totalSeconds / 60);
@@ -170,24 +184,23 @@
                 return `${m}:${s.toString().padStart(2, '0')}`;
             };
 
-            const triggerSync = async (finalScore, secondsSpent) => {
+            const triggerSync = async (payloadExtras) => {
                 const u = userRef.current;
                 const c = configRef.current;
                 if (!u || !u.name || !u.className) return;
 
                 setSyncing(true);
-                const timeString = formatTimeLabel(secondsSpent);
-                setFinalTimeLabel(timeString);
-
                 const payload = {
                     "Timestamp": new Date().toLocaleString(),
                     "Student Name": u.name,
                     "Class": u.className,
-                    "Score": finalScore,
-                    "Time": timeString,
                     "List": c.list,
                     "Difficulty": c.difficulty,
-                    "Mode": c.mode
+                    "Mode": c.mode,
+                    "Score": 0,
+                    "Time": "0:00",
+                    "Session Type": "Practice",
+                    ...payloadExtras
                 };
 
                 try {
@@ -204,18 +217,31 @@
                 }
             };
 
-            const handleLogin = (e) => {
-                e.preventDefault();
-                const name = e.target.studentName.value;
-                const className = e.target.className.value;
+            const handleLogin = (targetView) => {
+                const nameInput = document.getElementById('studentNameInput');
+                const classInput = document.getElementById('classNameInput');
+                
+                const name = nameInput?.value;
+                const className = classInput?.value;
+                
+                if (!name || !className) {
+                    alert("Please fill in your name and class.");
+                    return;
+                }
+
                 const userData = { name, className };
                 userRef.current = userData;
                 configRef.current = gameConfig;
                 setUser(userData);
-                startGame();
+                
+                if (targetView === 'game') startGame();
+                else if (targetView === 'test') startTest();
+                else setView('menu');
             };
 
             const startGame = () => {
+                setView('game');
+                configRef.current = gameConfig;
                 const list = VOCAB_LISTS[gameConfig.list] || VOCAB_LISTS.A;
                 const duration = gameConfig.difficulty === 'Easy' ? 180 : gameConfig.difficulty === 'Medium' ? 120 : 60;
                 
@@ -223,7 +249,7 @@
                 setTimeLeft(duration);
                 setIsGameOver(false);
                 setScore(0);
-                scoreRef.current = 0; // Reset score ref
+                scoreRef.current = 0;
                 setMatched([]);
                 setFlipped([]);
                 setEncouragement(ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)].replace("{name}", userRef.current?.name || "Student"));
@@ -238,23 +264,75 @@
                 setCards(newCards.sort(() => Math.random() - 0.5));
             };
 
+            const startTest = () => {
+                setView('test');
+                configRef.current = gameConfig;
+                setTestResult(null);
+                setTestAnswers({});
+                testAnswersRef.current = {};
+                
+                setTotalTimeLimit(300);
+                setTimeLeft(300);
+
+                const list = [...(VOCAB_LISTS[gameConfig.list] || VOCAB_LISTS.A)].sort(() => Math.random() - 0.5);
+                const selected = list.slice(0, 10);
+                const questions = selected.map((item, idx) => {
+                    const isMC = idx < 5;
+                    const options = [item.en, ...list.filter(x => x.id !== item.id).sort(() => Math.random() - 0.5).slice(0, 3).map(x => x.en)].sort();
+                    return {
+                        id: item.id,
+                        correct: item.en,
+                        translation: item.ar,
+                        definition: item.def,
+                        sentence: item.sentence,
+                        options: options,
+                        type: isMC ? 'mc' : 'fill'
+                    };
+                });
+                setTestQuestions(questions.sort(() => Math.random() - 0.5));
+            };
+
+            const submitTest = (isAuto = false) => {
+                if (timerRef.current) clearInterval(timerRef.current);
+                let points = 0;
+                const currentAnswers = testAnswersRef.current;
+                
+                testQuestions.forEach(q => {
+                    if (currentAnswers[q.id] === q.correct) points += 10;
+                });
+
+                setTestResult(points);
+                
+                // FIXED: Registering the correct difficulty to the sheet for Test mode
+                triggerSync({ 
+                    "Mode": "Test",
+                    "Difficulty": gameConfig.difficulty,
+                    "Score": points, 
+                    "Time": isAuto ? "Auto-Submit (5:00)" : formatTimeLabel(300 - timeLeft),
+                    "Session Type": "Proficiency Test" 
+                });
+            };
+
             useEffect(() => {
-                if (user && !isGameOver && timeLeft > 0) {
+                if (user && (view === 'game' || (view === 'test' && testResult === null)) && timeLeft > 0) {
                     timerRef.current = setInterval(() => {
                         setTimeLeft(t => {
                             if (t <= 1) {
                                 clearInterval(timerRef.current);
-                                setIsGameOver(true);
-                                // Use the ref for score to ensure we get the latest value even in this closure
-                                triggerSync(scoreRef.current, totalTimeLimit);
+                                if (view === 'game') {
+                                    setIsGameOver(true);
+                                    triggerSync({ "Score": scoreRef.current, "Time": formatTimeLabel(totalTimeLimit), "Session Type": "Practice Game" });
+                                } else if (view === 'test') {
+                                    submitTest(true);
+                                }
                                 return 0;
                             }
                             return t - 1;
                         });
                     }, 1000);
                 }
-                return () => clearInterval(timerRef.current);
-            }, [user, isGameOver, totalTimeLimit]);
+                return () => { if (timerRef.current) clearInterval(timerRef.current); };
+            }, [user, view, testResult]);
 
             const handleCardClick = (idx) => {
                 if (isGameOver || flipped.length === 2 || flipped.includes(idx) || matched.includes(cards[idx].id)) return;
@@ -271,19 +349,26 @@
                         const newScore = score + 10;
                         setMatched(newMatched);
                         setScore(newScore);
-                        scoreRef.current = newScore; // Sync ref
+                        scoreRef.current = newScore;
                         setFlipped([]);
 
                         if (newMatched.length === 10) {
-                            clearInterval(timerRef.current);
+                            if (timerRef.current) clearInterval(timerRef.current);
                             setIsGameOver(true);
                             const secondsSpent = totalTimeLimit - (timeLeft - 1);
-                            triggerSync(newScore, secondsSpent);
+                            setFinalTimeLabel(formatTimeLabel(secondsSpent));
+                            triggerSync({ "Score": newScore, "Time": formatTimeLabel(secondsSpent), "Session Type": "Practice Game" });
                         }
                     } else {
                         setTimeout(() => setFlipped([]), 1000);
                     }
                 }
+            };
+
+            const updateTestAnswer = (id, val) => {
+                const newAnswers = {...testAnswers, [id]: val};
+                setTestAnswers(newAnswers);
+                testAnswersRef.current = newAnswers;
             };
 
             if (!user) {
@@ -294,14 +379,14 @@
                                 <h1 className="text-3xl font-black italic uppercase tracking-tighter text-slate-800">Vocab Master</h1>
                                 <p className="text-xs font-bold text-indigo-500 uppercase tracking-[0.2em] mt-1">Fouad Nasir</p>
                             </div>
-                            <form onSubmit={handleLogin} className="space-y-4">
+                            <div className="space-y-4">
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Student Identity</label>
-                                    <input name="studentName" required placeholder="Full Name" className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold focus:ring-4 focus:ring-indigo-50 outline-none transition-all" />
+                                    <input id="studentNameInput" required placeholder="Full Name" className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold focus:ring-4 focus:ring-indigo-50 outline-none transition-all" />
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Classroom</label>
-                                    <input name="className" required placeholder="Class (e.g. 10B)" className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold focus:ring-4 focus:ring-indigo-50 outline-none transition-all" />
+                                    <input id="classNameInput" required placeholder="Class (e.g. 10B)" className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold focus:ring-4 focus:ring-indigo-50 outline-none transition-all" />
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1">
@@ -314,20 +399,143 @@
                                         </select>
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Time</label>
+                                        <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Difficulty</label>
                                         <select className="w-full p-4 bg-slate-100 rounded-2xl font-bold outline-none" onChange={e => setGameConfig({...gameConfig, difficulty: e.target.value})} defaultValue="Medium">
                                             <option>Easy</option><option>Medium</option><option>Hard</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Game Mode</label>
+                                    <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Practice Style</label>
                                     <select className="w-full p-4 bg-slate-100 rounded-2xl font-bold outline-none" onChange={e => setGameConfig({...gameConfig, mode: e.target.value})}>
                                         <option>English-Arabic</option><option>Word-Definition</option>
                                     </select>
                                 </div>
-                                <button className="w-full py-5 bg-indigo-600 text-white rounded-[1.5rem] font-black text-lg active:scale-95 transition-all mt-6 shadow-xl shadow-indigo-100">START MISSION</button>
-                            </form>
+
+                                <div className="pt-4 grid grid-cols-1 gap-3">
+                                    <button onClick={() => handleLogin('game')} className="w-full py-4 bg-indigo-600 text-white rounded-[1.2rem] font-black text-sm uppercase tracking-widest active:scale-95 transition-all shadow-lg shadow-indigo-100">Play Game</button>
+                                    <button onClick={() => handleLogin('test')} className="w-full py-4 bg-emerald-600 text-white rounded-[1.2rem] font-black text-sm uppercase tracking-widest active:scale-95 transition-all shadow-lg shadow-emerald-100">Take a Test</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (view === 'menu') {
+                return (
+                    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
+                        <div className="max-w-md w-full space-y-6 text-center">
+                            <h2 className="text-4xl font-black text-slate-800">Hi, {user.name}</h2>
+                            <p className="text-slate-500 font-medium italic">What is your objective today?</p>
+                            <div className="grid grid-cols-1 gap-4 mt-6">
+                                <button onClick={startGame} className="p-6 bg-white border-2 border-slate-100 rounded-[1.5rem] hover:border-indigo-600 transition-all font-black text-slate-800 group text-left flex justify-between items-center">
+                                    <span>PRACTICE GAME</span>
+                                    <span className="text-indigo-600 opacity-0 group-hover:opacity-100 transition-all">→</span>
+                                </button>
+                                <button onClick={startTest} className="p-6 bg-white border-2 border-slate-100 rounded-[1.5rem] hover:border-emerald-600 transition-all font-black text-slate-800 group text-left flex justify-between items-center">
+                                    <span>TAKE A TEST</span>
+                                    <span className="text-emerald-600 opacity-0 group-hover:opacity-100 transition-all">→</span>
+                                </button>
+                                <button onClick={() => setUser(null)} className="p-6 text-slate-400 font-bold hover:text-red-500 transition-all uppercase text-xs tracking-widest">LOGOUT</button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (view === 'test') {
+                return (
+                    <div className="min-h-screen bg-slate-50 pb-20">
+                        <header className="bg-white border-b p-4 sticky top-0 z-40 flex justify-between items-center px-6">
+                             <button onClick={() => setView('menu')} className="text-slate-400 hover:text-slate-600 font-black text-xs uppercase tracking-widest flex items-center gap-2">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7"></path></svg>
+                                Back
+                             </button>
+                             <div className="text-center">
+                                {/* FIXED: Increased font size for Time Remaining label */}
+                                <span className={`text-sm font-black uppercase tracking-[0.2em] block mb-1 ${timeLeft < 30 ? 'text-rose-500 animate-pulse' : 'text-indigo-600'}`}>
+                                    {timeLeft === 0 ? 'TIME EXPIRED' : `Time Remaining`}
+                                </span>
+                                {/* Timer font is already large (text-4xl), added extra weight for emphasis */}
+                                <span className={`text-5xl font-black tabular-nums block ${timeLeft < 30 ? 'text-rose-600' : 'text-slate-900'}`}>{formatTimeLabel(timeLeft)}</span>
+                             </div>
+                             <div className="w-16"></div>
+                        </header>
+
+                        <div className="max-w-2xl mx-auto p-6 space-y-12 mt-8">
+                            <h1 className="text-2xl font-black text-slate-800 text-center uppercase tracking-tight">List {gameConfig.list} Proficiency Assessment</h1>
+                            
+                            {testQuestions.map((q, idx) => (
+                                <div key={q.id} className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 relative overflow-hidden">
+                                    {testResult !== null && (
+                                        <div className={`absolute top-0 right-0 p-4 font-black uppercase text-xs ${testAnswers[q.id] === q.correct ? 'text-emerald-500' : 'text-rose-500'}`}>
+                                            {testAnswers[q.id] === q.correct ? 'Correct' : 'Incorrect'}
+                                        </div>
+                                    )}
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <span className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-black text-slate-500">{idx + 1}</span>
+                                        {/* FIXED: Increased font size for Vocabulary Link / Sentence Context */}
+                                        <span className="text-sm font-black text-slate-400 uppercase tracking-widest">{q.type === 'mc' ? 'Vocabulary Link' : 'Sentence Context'}</span>
+                                    </div>
+                                    
+                                    {q.type === 'mc' ? (
+                                        <div className="space-y-6">
+                                            <h3 className="text-3xl font-extrabold text-slate-800 leading-tight">
+                                                Which word matches the meaning: <span className="text-indigo-600 italic">"{gameConfig.mode === 'English-Arabic' ? q.translation : q.definition}"</span>?
+                                            </h3>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                {q.options.map(opt => (
+                                                    <button 
+                                                        key={opt}
+                                                        disabled={testResult !== null}
+                                                        onClick={() => updateTestAnswer(q.id, opt)}
+                                                        className={`p-5 rounded-2xl font-black text-2xl text-left transition-all border-2 ${testAnswers[q.id] === opt ? (testResult !== null ? (opt === q.correct ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-rose-500 bg-rose-50 text-rose-700') : 'border-indigo-600 bg-indigo-50 text-indigo-600') : (testResult !== null && opt === q.correct ? 'border-emerald-500 bg-emerald-50' : 'border-slate-100 hover:border-slate-200 text-slate-600')}`}
+                                                    >
+                                                        {opt}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-6">
+                                            <h3 className="text-3xl font-extrabold text-slate-800 leading-relaxed">
+                                                {q.sentence.split('___')[0]}
+                                                <div className="relative inline-block mx-2 align-middle min-w-[200px]">
+                                                    <select 
+                                                        disabled={testResult !== null}
+                                                        value={testAnswers[q.id] || ""}
+                                                        onChange={(e) => updateTestAnswer(q.id, e.target.value)}
+                                                        className={`w-full px-5 py-3 rounded-xl border-2 outline-none font-black text-2xl appearance-none cursor-pointer transition-all ${testResult !== null ? (testAnswers[q.id] === q.correct ? 'bg-emerald-100 border-emerald-500 text-emerald-700' : 'bg-rose-100 border-rose-500 text-rose-700') : 'bg-indigo-50 border-indigo-200 text-indigo-700 hover:border-indigo-400'}`}
+                                                    >
+                                                        <option value="">Select word...</option>
+                                                        {q.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                                    </select>
+                                                </div>
+                                                {q.sentence.split('___')[1]}
+                                            </h3>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+
+                            {testResult === null ? (
+                                <button 
+                                    onClick={() => submitTest(false)}
+                                    disabled={Object.keys(testAnswers).length < 10 || syncing}
+                                    className="w-full py-6 bg-indigo-600 text-white rounded-[2rem] font-black text-2xl shadow-xl shadow-indigo-100 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-3 mt-12 mb-20"
+                                >
+                                    {syncing && <div className="spinner"></div>}
+                                    {syncing ? 'RECORDING SCORE...' : 'FINISH TEST'}
+                                </button>
+                            ) : (
+                                <div className="bg-slate-900 rounded-[3rem] p-10 text-center text-white shadow-2xl mb-20">
+                                    <div className="text-xs font-black text-indigo-400 uppercase tracking-[0.3em] mb-4">Final Score</div>
+                                    <div className="text-9xl font-black mb-4">{testResult}<span className="text-3xl text-slate-500">/100</span></div>
+                                    <p className="text-slate-400 text-lg font-medium mb-8">Test recorded successfully for {user.name}.</p>
+                                    <button onClick={() => setView('menu')} className="w-full py-6 bg-white text-slate-900 rounded-3xl font-black text-xl active:scale-95 transition-all">EXIT ASSESSMENT</button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 );
@@ -341,23 +549,21 @@
                     
                     <header className="bg-white/80 backdrop-blur-md p-4 border-b flex justify-between items-center px-6 sticky top-2 z-40">
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Time Remaining</span>
-                            <span className="text-xl font-black tabular-nums text-slate-700">{formatTimeLabel(timeLeft)}</span>
+                            <span className="text-xs font-black text-slate-400 uppercase tracking-widest leading-none">Time Left</span>
+                            <span className="text-3xl font-black tabular-nums text-slate-900">{formatTimeLabel(timeLeft)}</span>
                         </div>
                         
-                        <div className="text-center hidden sm:block">
-                            <div className="px-4 py-1.5 bg-indigo-50 rounded-full inline-block">
-                                <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">{user.name} • {user.className} • LIST {gameConfig.list}</span>
-                            </div>
+                        <div className="text-center">
+                            <button onClick={() => setView('menu')} className="text-xs font-black text-indigo-400 uppercase tracking-widest hover:underline px-4 py-2 bg-indigo-50 rounded-full">Exit Practice</button>
                         </div>
 
                         <div className="flex flex-col items-end">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none text-right">Progress</span>
-                            <span className="text-xl font-black text-indigo-600 tabular-nums">{score}</span>
+                            <span className="text-xs font-black text-slate-400 uppercase tracking-widest leading-none text-right">Points</span>
+                            <span className="text-3xl font-black text-indigo-600 tabular-nums">{score}</span>
                         </div>
                     </header>
 
-                    <main className="flex-1 p-6 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4 max-w-6xl mx-auto w-full pb-20">
+                    <main className="flex-1 p-6 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4 max-w-6xl mx-auto w-full pb-20 mt-4">
                         {cards.map((card, i) => {
                             const show = flipped.includes(i) || matched.includes(card.id);
                             return (
@@ -365,7 +571,7 @@
                                     <div className={`card-inner ${show ? 'card-flipped' : ''}`}>
                                         <div className="card-front bg-white border-2 border-slate-100 text-slate-200 font-black text-4xl">?</div>
                                         <div className={`card-back border-2 ${matched.includes(card.id) ? 'bg-emerald-500 border-emerald-400 text-white shadow-lg shadow-emerald-100' : 'bg-white border-indigo-600 text-indigo-600 shadow-md'}`}>
-                                            <span className={`font-bold leading-tight ${card.isAr ? 'arabic text-2xl' : 'text-xs sm:text-sm'}`}>{card.text}</span>
+                                            <span className={`font-black leading-tight ${card.isAr ? 'arabic text-2xl' : 'text-sm sm:text-base px-2'}`}>{card.text}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -383,53 +589,34 @@
                                 )}
                                 
                                 <div className="mb-8">
-                                    <div className={`w-16 h-16 rounded-3xl flex items-center justify-center mx-auto mb-4 ${timeLeft === 0 ? 'bg-amber-50' : 'bg-emerald-50'}`}>
-                                        <svg className={`w-8 h-8 ${timeLeft === 0 ? 'text-amber-600' : 'text-emerald-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            {timeLeft === 0 ? (
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            ) : (
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
-                                            )}
+                                    <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 ${timeLeft === 0 ? 'bg-amber-50' : 'bg-emerald-50'}`}>
+                                        <svg className={`w-10 h-10 ${timeLeft === 0 ? 'text-amber-600' : 'text-emerald-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            {timeLeft === 0 ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"></path> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>}
                                         </svg>
                                     </div>
-                                    <h2 className="text-xl font-bold text-slate-800 mb-2 leading-tight">
-                                        {timeLeft === 0 ? `Time's up, ${user.name}!` : encouragement}
-                                    </h2>
-                                    <p className="text-slate-400 text-xs font-black uppercase tracking-widest">{timeLeft === 0 ? 'Session Ended' : 'Mission Complete'}</p>
+                                    <h2 className="text-2xl font-black text-slate-800 mb-2 leading-tight">{timeLeft === 0 ? `Time's up!` : encouragement}</h2>
+                                    <p className="text-slate-400 text-xs font-black uppercase tracking-widest">Practice Session Complete</p>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4 mb-8">
                                     <div className="bg-slate-50 rounded-3xl p-6">
-                                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Score</div>
-                                        <div className="text-4xl font-black text-indigo-600 tracking-tighter">{score}</div>
+                                        <div className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Score</div>
+                                        <div className="text-5xl font-black text-indigo-600 tracking-tighter">{score}</div>
                                     </div>
                                     <div className="bg-slate-50 rounded-3xl p-6">
-                                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Time Spent</div>
-                                        <div className="text-4xl font-black text-indigo-600 tracking-tighter">{finalTimeLabel || "0:00"}</div>
+                                        <div className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Time</div>
+                                        <div className="text-5xl font-black text-indigo-600 tracking-tighter">{finalTimeLabel || formatTimeLabel(totalTimeLimit)}</div>
                                     </div>
                                 </div>
                                 
-                                {syncing && (
-                                    <div className="flex items-center justify-center gap-2 mb-6 text-indigo-600">
-                                        <div className="spinner !border-indigo-600 !border-t-transparent"></div>
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Saving to Cloud...</span>
-                                    </div>
-                                )}
-
                                 <div className="grid grid-cols-1 gap-3">
-                                    <button onClick={startGame} className="w-full py-5 bg-indigo-600 text-white rounded-[1.5rem] font-black shadow-xl shadow-indigo-100 active:scale-95 transition-all">TRY AGAIN</button>
-                                    <button onClick={() => setUser(null)} className="w-full py-4 text-slate-400 rounded-[1.5rem] font-black hover:bg-slate-50 active:scale-95 transition-all text-sm">BACK TO MENU</button>
+                                    <button onClick={startGame} className="w-full py-5 bg-indigo-600 text-white rounded-[1.5rem] font-black text-xl shadow-xl shadow-indigo-100 active:scale-95 transition-all">TRY AGAIN</button>
+                                    <button onClick={() => setView('menu')} className="w-full py-4 text-slate-400 rounded-[1.5rem] font-black hover:bg-slate-50 active:scale-95 transition-all text-sm uppercase tracking-widest">BACK TO MENU</button>
                                 </div>
                             </div>
                         </div>
                     )}
-                    
-                    <style>{`
-                        @keyframes loading {
-                            0% { transform: translateX(-100%); }
-                            100% { transform: translateX(300%); }
-                        }
-                    `}</style>
+                    <style>{`@keyframes loading { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }`}</style>
                 </div>
             );
         };
