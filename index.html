@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Band III Vocab Master | Professional Edition</title>
+    <title>Vocab Master | Professional Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Cairo:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Cairo:wght@700;900&family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --glass: rgba(255, 255, 255, 0.95);
-        }
+        :root { --glass: rgba(255, 255, 255, 0.95); }
         body { 
-            font-family: 'Outfit', sans-serif; 
-            background: linear-gradient(135deg, #4338ca 0%, #6d28d9 50%, #7e22ce 100%);
+            font-family: 'Outfit', 'Assistant', sans-serif; 
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
             background-attachment: fixed;
             min-height: 100vh;
         }
-        .arabic { font-family: 'Cairo', sans-serif; }
+        .arabic { font-family: 'Cairo', sans-serif; direction: rtl; }
+        .hebrew { font-family: 'Assistant', sans-serif; direction: rtl; }
+        .rtl { direction: rtl; }
         
         .perspective-1000 { perspective: 1000px; }
         .card-inner {
@@ -37,12 +37,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 1rem;
-            padding: 1rem;
+            border-radius: 0.75rem;
+            padding: 0.5rem;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-        .card-front { background: var(--glass); border: 2px solid white; color: #4338ca; }
+        .card-front { background: var(--glass); border: 2px solid white; color: #4338ca; font-size: 1.5rem; font-weight: 900; }
         .card-back { transform: rotateY(180deg); background: #ffffff; border: 2px solid #4338ca; }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -60,22 +59,15 @@
             background-color: #f1f5f9;
             border-bottom: 3px solid #4338ca;
             border-radius: 0.4rem;
-            padding: 4px 12px;
+            padding: 2px 8px;
             font-weight: 800;
             color: #4338ca;
             cursor: pointer;
             outline: none;
-            transition: all 0.2s;
             margin: 0 4px;
-            font-size: 1.25rem;
         }
-        .gap-select:focus { background-color: #4338ca; color: white; }
         
-        .app-container {
-            max-width: 580px;
-            margin-left: auto;
-            margin-right: auto;
-        }
+        .app-container { max-width: 800px; margin: 0 auto; }
     </style>
 </head>
 <body class="text-slate-900 p-4">
@@ -95,70 +87,236 @@
         import React, { useState, useEffect, useRef } from 'react';
         import ReactDOM from 'react-dom';
 
-        const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzk8q3e-MFRQiUnUI6h6Stvc_HZ1zcPRyk_WSYtH06U4dJ4S6NqdtaYCfdvhSJY9ZpnYw/exec';
+        const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxCrhY80_FZB6hWbc69EjsfUQKgMUaDT8eMeiATGWkrMikV2AvgOTkIlnIL8sZRkXUfCg/exec';
 
-        const VOCAB_LISTS = {
-            A: [
-                { id: 101, en: "addition", ar: "إضافة", def: "Adding/extension/inclusion", sentence: "The new ___ to the building looks great." },
-                { id: 102, en: "advance", ar: "تقدم", def: "Progress or discoveries", sentence: "Technology continues to ___ at a rapid pace." },
-                { id: 103, en: "advanced", ar: "متقدم", def: "Modern, high level", sentence: "She is taking an ___ math course this year." },
-                { id: 104, en: "advertising", ar: "إعلان", def: "Business of persuading people to buy", sentence: "The company spent a lot on ___." },
-                { id: 105, en: "analysis", ar: "تحليل", def: "Examining something carefully", sentence: "The chemical ___ showed high levels of salt." },
-                { id: 106, en: "appear", ar: "يظهر", def: "To start to be seen", sentence: "The sun will ___ from behind the clouds soon." },
-                { id: 107, en: "approach", ar: "نهج", def: "Method or way of dealing with something", sentence: "We need a new ___ to solve this problem." },
-                { id: 108, en: "average", ar: "معدل", def: "Ordinary or usual", sentence: "The ___ student spends two hours on homework." },
-                { id: 109, en: "available", ar: "متاح", def: "Able to be used or obtained", sentence: "Is there any water ___ for the guests?" },
-                { id: 110, en: "benefit", ar: "فائدة", def: "An advantage or profit", sentence: "Regular exercise is a major ___ to your health." }
-            ],
-            B: [
-                { id: 201, en: "challenge", ar: "تحدي", def: "Something needing great effort", sentence: "Climbing that mountain was a huge ___." },
-                { id: 202, en: "character", ar: "شخصية", def: "Qualities distinctive to an individual", sentence: "Hard work builds a strong ___." },
-                { id: 203, en: "circumstance", ar: "ظرف", def: "Fact or condition connected to an event", sentence: "Under no ___ should you open that door." },
-                { id: 204, en: "collection", ar: "مجموعة", def: "Group of things gathered together", sentence: "He has a large ___ of old coins." },
-                { id: 205, en: "combine", ar: "يدمج", def: "Join or merge to form a single unit", sentence: "You should ___ the flour and sugar together." },
-                { id: 206, en: "community", ar: "مجتمع", def: "Group of people living in the same place", sentence: "The local ___ joined forces to clean the park." },
-                { id: 207, en: "completely", ar: "تماماً", def: "Totally or utterly", sentence: "I forgot about the meeting ___." },
-                { id: 208, en: "complex", ar: "معقد", def: "Consisting of many different parts", sentence: "It was a very ___ problem to solve." },
-                { id: 209, en: "condition", ar: "حالة", def: "The state of something", sentence: "The car is in excellent ___." },
-                { id: 210, en: "consider", ar: "يعتبر", def: "Think carefully about something", sentence: "Please ___ my proposal before deciding." }
-            ],
-            C: [
-                { id: 301, en: "concept", ar: "مفهوم", def: "An abstract idea", sentence: "The ___ of time travel is fascinating." },
-                { id: 302, en: "conclude", ar: "يستنتج", def: "To bring something to an end", sentence: "I would like to ___ by thanking you all." },
-                { id: 303, en: "conduct", ar: "سلوك / يجرى", def: "Manner of behavior", sentence: "The school has a strict code of ___." },
-                { id: 304, en: "consequence", ar: "عاقبة", def: "A result of an action", sentence: "Every action has a ___." },
-                { id: 305, en: "consist", ar: "يتكون من", def: "Be composed of", sentence: "The team will ___ of five members." },
-                { id: 306, en: "constant", ar: "ثابت", def: "Occurring continuously", sentence: "The baby needs ___ attention." },
-                { id: 307, en: "construct", ar: "يبني", def: "Build or erect", sentence: "They plan to ___ a new bridge over the river." },
-                { id: 308, en: "consumer", ar: "مستهلك", def: "Person who purchases goods", sentence: "The modern ___ expects high quality." },
-                { id: 309, en: "contact", ar: "اتصال", def: "State of touching/communicating", sentence: "Please keep in ___ while you are away." },
-                { id: 310, en: "contain", ar: "يحتوي", def: "Hold within", sentence: "This box does not ___ any dangerous items." }
-            ],
-            D: [
-                { id: 401, en: "debate", ar: "مناظرة", def: "Formal discussion", sentence: "There is a heated ___ about climate change." },
-                { id: 402, en: "decrease", ar: "يتناقص", def: "Become smaller", sentence: "The population began to ___ after the war." },
-                { id: 403, en: "demonstrate", ar: "يظهر / يبرهن", def: "Clearly show truth", sentence: "She will ___ how to use the new software." },
-                { id: 404, en: "despite", ar: "بالرغم من", def: "Without being affected by", sentence: "___ the rain, we went for a walk." },
-                { id: 405, en: "device", ar: "جهاز", def: "Tool for a purpose", sentence: "A smartphone is a versatile ___." },
-                { id: 406, en: "difference", ar: "اختلاف", def: "Point of unlikeness", sentence: "There is a big ___ between the two results." },
-                { id: 407, en: "difficulty", ar: "صعوبة", def: "State of being hard", sentence: "He finished the task without any ___." },
-                { id: 408, en: "direct", ar: "مباشر", def: "Straight line/way", sentence: "Is there a ___ flight to New York?" },
-                { id: 409, en: "discovery", ar: "اكتشاف", def: "Finding for first time", sentence: "The ___ of electricity changed everything." },
-                { id: 410, en: "distance", ar: "مسافة", def: "Space between two points", sentence: "The ___ between the cities is 50 miles." }
-            ]
-        };
-
-        const ENCOURAGEMENTS = {
-            excellent: ["Outstanding! You're a vocab master!", "Perfect score! Fouad Nasir would be proud!", "Incredible work! You've mastered this list!"],
-            good: ["Great job! You're almost there!", "Well done! Your hard work is paying off!", "Solid performance! Keep pushing!"],
-            fair: ["Good effort! Keep practicing to get better.", "Not bad! A bit more study and you'll be an expert.", "You're getting there! Don't stop now!"],
-            low: ["Don't give up! Try again to improve.", "Mistakes are proof you're learning. Keep at it!", "Keep studying! Success comes with practice."]
+        const VOCAB_DATA = {
+            English: {
+                A: [
+                    { id: 101, word: "addition", ar: "إضافة", def: "Adding/extension/inclusion", sentence: "The new ___ to the building looks great." },
+                    { id: 102, word: "advance", ar: "تقدم", def: "Progress or discoveries", sentence: "Technology continues to ___ at a rapid pace." },
+                    { id: 103, word: "advanced", ar: "متقدم", def: "Modern, high level", sentence: "She is taking an ___ math course this year." },
+                    { id: 104, word: "advertising", ar: "إعلان", def: "Business of persuading people to buy", sentence: "The company spent a lot on ___." },
+                    { id: 105, word: "analysis", ar: "تحليل", def: "Examining something carefully", sentence: "The chemical ___ showed high levels of salt." },
+                    { id: 106, word: "appear", ar: "يظهر", def: "To start to be seen", sentence: "The sun will ___ from behind the clouds soon." },
+                    { id: 107, word: "approach", ar: "نهج", def: "Method or way of dealing with something", sentence: "We need a new ___ to solve this problem." },
+                    { id: 108, word: "average", ar: "معدل", def: "Ordinary or usual", sentence: "The ___ student spends two hours on homework." },
+                    { id: 109, word: "available", ar: "متاح", def: "Able to be used or obtained", sentence: "Is there any water ___ for the guests?" },
+                    { id: 110, word: "benefit", ar: "فائدة", def: "An advantage or profit", sentence: "Regular exercise is a major ___ to your health." },
+                    { id: 111, word: "brief", ar: "موجز", def: "Short in duration", sentence: "We had a ___ meeting before the class." },
+                    { id: 112, word: "capable", ar: "قادر", def: "Having the ability", sentence: "He is a very ___ manager." },
+                    { id: 113, word: "careful", ar: "حذر", def: "Cautious", sentence: "Be ___ when you cross the street." },
+                    { id: 114, word: "category", ar: "فئة", def: "A group of things with similar features", sentence: "Which ___ does this item fall into?" },
+                    { id: 115, word: "central", ar: "مركزي", def: "In the middle", sentence: "The hotel is in a ___ location." },
+                    { id: 116, word: "challenge", ar: "تحدي", def: "A difficult task", sentence: "Learning a new language is a big ___." },
+                    { id: 117, word: "character", ar: "شخصية", def: "Mental and moral qualities", sentence: "Hard times build ___." },
+                    { id: 118, word: "choice", ar: "خيار", def: "Act of choosing", sentence: "You have a ___ between coffee and tea." },
+                    { id: 119, word: "claim", ar: "ادعاء", def: "Assert that something is true", sentence: "He made a bold ___ about his skills." },
+                    { id: 120, word: "collection", ar: "مجموعة", def: "Group of objects", sentence: "She has a large ___ of stamps." },
+                    { id: 121, word: "combine", ar: "دمج", def: "Join together", sentence: "___ the ingredients in a large bowl." },
+                    { id: 122, word: "community", ar: "مجتمع", def: "Group of people in one place", sentence: "The local ___ is very supportive." },
+                    { id: 123, word: "compare", ar: "مقارنة", def: "Estimate similarities", sentence: "It's hard to ___ the two cities." },
+                    { id: 124, word: "complete", ar: "كامل", def: "Having all parts", sentence: "The set is finally ___." },
+                    { id: 125, word: "concern", ar: "قلق", def: "Worry", sentence: "There is growing ___ about the environment." }
+                ],
+                B: [
+                    { id: 201, word: "consider", ar: "يفكر في", def: "Think carefully about", sentence: "Please ___ my offer." },
+                    { id: 202, word: "constant", ar: "ثابت", def: "Occurring continuously", sentence: "He is in ___ pain." },
+                    { id: 203, word: "contain", ar: "يحتوي", def: "Have or hold within", sentence: "This box ___ old photos." },
+                    { id: 204, word: "context", ar: "سياق", def: "Circumstances around an event", sentence: "You need to see the word in ___." },
+                    { id: 205, word: "create", ar: "يخلق", def: "Bring into existence", sentence: "Artists ___ beautiful works." },
+                    { id: 206, word: "critical", ar: "حاسم", def: "Expressing adverse comments", sentence: "The situation has reached a ___ point." },
+                    { id: 207, word: "culture", ar: "ثقافة", def: "Arts and customs of a people", sentence: "I love learning about Greek ___." },
+                    { id: 208, word: "damage", ar: "ضرر", def: "Physical harm", sentence: "The storm caused a lot of ___." },
+                    { id: 209, word: "decision", ar: "قرار", def: "A conclusion reached", sentence: "It was a difficult ___ to make." },
+                    { id: 210, word: "decrease", ar: "ينقص", def: "Make smaller", sentence: "The population began to ___." },
+                    { id: 211, word: "define", ar: "يعرف", def: "State the meaning of", sentence: "Can you ___ this word?" },
+                    { id: 212, word: "delivery", ar: "توصيل", def: "Action of delivering goods", sentence: "The ___ will arrive tomorrow." },
+                    { id: 213, word: "demand", ar: "طلب", def: "Insistent request", sentence: "There is a high ___ for new cars." },
+                    { id: 214, word: "depend", ar: "يعتمد", def: "Rely on", sentence: "Our plans ___ on the weather." },
+                    { id: 215, word: "describe", ar: "يصف", def: "Give a detailed account", sentence: "Please ___ the man you saw." },
+                    { id: 216, word: "design", ar: "تصميم", def: "Plan or drawing", sentence: "I like the ___ of your house." },
+                    { id: 217, word: "detail", ar: "تفصيل", def: "Individual feature", sentence: "Every ___ is important." },
+                    { id: 218, word: "develop", ar: "يطור", def: "Grow or cause to grow", sentence: "We want to ___ our business." },
+                    { id: 219, word: "difference", ar: "اختلاف", def: "Way in which things are distinct", sentence: "What is the ___ between these two?" },
+                    { id: 220, word: "difficult", ar: "صعب", def: "Hard to do", sentence: "The test was very ___." },
+                    { id: 221, word: "direction", ar: "اتجاه", def: "Course which something moves", sentence: "Which ___ are we going?" },
+                    { id: 222, word: "discovery", ar: "اكتشاف", def: "Finding something new", sentence: "The ___ of fire changed history." },
+                    { id: 223, word: "discuss", ar: "يناقش", def: "Talk about something", sentence: "Let's ___ this tomorrow." },
+                    { id: 224, word: "disease", ar: "مرض", def: "Disorder of function", sentence: "They are fighting a rare ___." },
+                    { id: 225, word: "distance", ar: "مسافة", def: "Space between things", sentence: "The ___ is ten miles." }
+                ],
+                C: [
+                    { id: 301, word: "economic", ar: "اقتصادي", def: "Relating to the economy", sentence: "The country is in an ___ crisis." },
+                    { id: 302, word: "effect", ar: "تأثير", def: "A result", sentence: "The drug has a strong ___." },
+                    { id: 303, word: "effective", ar: "فعال", def: "Successful result", sentence: "This is an ___ way to learn." },
+                    { id: 304, word: "efficient", ar: "كفؤ", def: "Well-organized work", sentence: "The new engine is more ___." },
+                    { id: 305, word: "element", ar: "عنصر", def: "Part or aspect", sentence: "Water is a vital ___ of life." },
+                    { id: 306, word: "emphasize", ar: "يؤكد", def: "Give special importance", sentence: "I want to ___ this point." },
+                    { id: 307, word: "employ", ar: "يوظف", def: "Give work to", sentence: "The factory will ___ 100 people." },
+                    { id: 308, word: "encourage", ar: "يشجع", def: "Give support", sentence: "Parents should ___ their children." },
+                    { id: 309, word: "environment", ar: "بيئة", def: "Surroundings", sentence: "We must protect the ___." },
+                    { id: 310, word: "essential", ar: "ضروري", def: "Absolutely necessary", sentence: "Sleep is ___ for health." },
+                    { id: 311, word: "establish", ar: "يؤسس", def: "Set up firmly", sentence: "They plan to ___ a new school." },
+                    { id: 312, word: "estimate", ar: "يقدر", def: "Roughly calculate", sentence: "Can you ___ the cost?" },
+                    { id: 313, word: "event", ar: "حدث", def: "Thing that happens", sentence: "The sports ___ was a success." },
+                    { id: 314, word: "evidence", ar: "دليل", def: "Facts or info", sentence: "There is no ___ against him." },
+                    { id: 315, word: "examine", ar: "يفحص", def: "Inspect in detail", sentence: "The doctor will ___ you now." },
+                    { id: 316, word: "excellent", ar: "ممتاز", def: "Extremely good", sentence: "You did an ___ job." },
+                    { id: 317, word: "existence", ar: "وجود", def: "State of being real", sentence: "I don't believe in the ___ of ghosts." },
+                    { id: 318, word: "expect", ar: "يتوقع", def: "Regard as likely", sentence: "I ___ to see you there." },
+                    { id: 319, word: "experience", ar: "خبرة", def: "Knowledge from doing", sentence: "He has years of ___." },
+                    { id: 320, word: "experiment", ar: "تجربة", def: "Test procedure", sentence: "The ___ proved the theory." },
+                    { id: 321, word: "explain", ar: "يشرح", def: "Make clear", sentence: "Can you ___ the rules?" },
+                    { id: 322, word: "explore", ar: "يستكشف", def: "Travel to learn", sentence: "We want to ___ the cave." },
+                    { id: 323, word: "express", ar: "يعبر", def: "Convey a feeling", sentence: "It's hard to ___ my feelings." },
+                    { id: 324, word: "extreme", ar: "متطرف", def: "High degree", sentence: "He likes ___ sports." },
+                    { id: 325, word: "factor", ar: "عامل", def: "Contributing circumstance", sentence: "Luck was a big ___ in our win." }
+                ],
+                D: [
+                    { id: 401, word: "familiar", ar: "مألوف", def: "Well known", sentence: "The face looks ___." },
+                    { id: 402, word: "feature", ar: "ميزة", def: "Distinctive attribute", sentence: "The phone has a new ___." },
+                    { id: 403, word: "finally", ar: "أخيراً", def: "After a long time", sentence: "The bus ___ arrived." },
+                    { id: 404, word: "financial", ar: "مالي", def: "Relating to finance", sentence: "They need ___ help." },
+                    { id: 405, word: "focus", ar: "تركيز", def: "Center of interest", sentence: "You need to ___ on your study." },
+                    { id: 406, word: "force", ar: "قوة", def: "Strength", sentence: "He used ___ to open the door." },
+                    { id: 407, word: "frequently", ar: "بشكل متكرر", def: "Often", sentence: "We meet ___ for lunch." },
+                    { id: 408, word: "function", ar: "وظيفة", def: "Purpose", sentence: "What is the ___ of this tool?" },
+                    { id: 409, word: "further", ar: "إضافي", def: "Greater distance", sentence: "I have no ___ comments." },
+                    { id: 410, word: "general", ar: "عام", def: "Affecting all", sentence: "In ___, I like the plan." },
+                    { id: 411, word: "generation", ar: "جيل", def: "People born at same time", sentence: "The younger ___ likes tech." },
+                    { id: 412, word: "goal", ar: "هدف", def: "Object of ambition", sentence: "My ___ is to travel the world." },
+                    { id: 413, word: "government", ar: "حكومة", def: "Governing body", sentence: "The ___ changed the law." },
+                    { id: 414, word: "gradually", ar: "تدريجياً", def: "Slowly", sentence: "The weather ___ got colder." },
+                    { id: 415, word: "growth", ar: "نمو", def: "Increasing process", sentence: "The company saw fast ___." },
+                    { id: 416, word: "healthy", ar: "صحي", def: "Good health", sentence: "Eat fruit to stay ___." },
+                    { id: 417, word: "history", ar: "تاريخ", def: "Past events", sentence: "She is a ___ teacher." },
+                    { id: 418, word: "huge", ar: "ضخم", def: "Large", sentence: "That's a ___ house." },
+                    { id: 419, word: "identify", ar: "يتعرف على", def: "Establish identity", sentence: "Can you ___ this plant?" },
+                    { id: 420, word: "ignore", ar: "يتجاهل", def: "Refuse notice", sentence: "Don't ___ the warning." },
+                    { id: 421, word: "impact", ar: "تأثير", def: "Collision or effect", sentence: "The news had a big ___." },
+                    { id: 422, word: "important", ar: "مهم", def: "Significant", sentence: "Water is ___ for life." },
+                    { id: 423, word: "improve", ar: "يحسن", def: "Make better", sentence: "I want to ___ my English." },
+                    { id: 424, word: "include", ar: "يشمل", def: "Contain", sentence: "Does the price ___ tax?" },
+                    { id: 425, word: "increase", ar: "يزيد", def: "Make greater", sentence: "They will ___ the price." }
+                ]
+            },
+            Hebrew: {
+                א: [
+                    { id: 501, word: "מתנפלים", ar: "ينقضون / يتهجمون", def: "Attack", sentence: "הזאבים ___ על הטרף." },
+                    { id: 502, word: "צוף פרחים", ar: "رحيق الأزهار", def: "Nectar", sentence: "הדבורים אוספות ___." },
+                    { id: 503, word: "יערות", ar: "غابات", def: "Forests", sentence: "יש הרבה חיות בתוך ___." },
+                    { id: 504, word: "מקומות בילוי", ar: "أماكن ترفيه", def: "Entertainment", sentence: "העיר מלאה ב___." },
+                    { id: 505, word: "לפענח", ar: "فك الرموز", def: "Decode", sentence: "ניסינו ___ את סוד המפה." },
+                    { id: 506, word: "על טבעי", ar: "خارق للطبيعة", def: "Supernatural", sentence: "זה נראה כמו כוח ___." },
+                    { id: 507, word: "מרתק", ar: "שייק / מעניין מאוד", def: "Fascinating", sentence: "הספר הזה פשוט ___." },
+                    { id: 508, word: "קראו", ar: "قرأوا / نادوا", def: "Read/Called", sentence: "הילדים ___ את ההוראות." },
+                    { id: 509, word: "נדידה", ar: "هجرة", def: "Migration", sentence: "עכשיו זו עונת ה___ של הציפורים." },
+                    { id: 510, word: "הישרדות", ar: "بقاء", def: "Survival", sentence: "החיות נלחמות על ה___ שלהן." },
+                    { id: 511, word: "מדבריות", ar: "صحارى", def: "Deserts", sentence: "הגמלים חיים ב___." },
+                    { id: 512, word: "טורף", ar: "مفترس", def: "Predator", sentence: "האריה הוא ___ חזק." },
+                    { id: 513, word: "מחבק", ar: "يعانق", def: "Hugging", sentence: "הוא ___ את חברו לשלום." },
+                    { id: 514, word: "חושים מחודדים", ar: "حواس حادة", def: "Sharp senses", sentence: "לכלבים יש ___." },
+                    { id: 515, word: "התנהגות", ar: "سلوك", def: "Behavior", sentence: "ה___ שלו היתה מצוינת." },
+                    { id: 516, word: "למרות זאת", ar: "رغم ذلك", def: "Despite", sentence: "היה קשה, ___ הצלחנו." },
+                    { id: 517, word: "לשגשג", ar: "أن يزدهر", def: "Flourish", sentence: "העסק התחיל ___." },
+                    { id: 518, word: "מסקנות", ar: "استنتاجات", def: "Conclusions", sentence: "הגענו ל___ בסוף המחקר." },
+                    { id: 519, word: "חשכה", ar: "ظلام", def: "Darkness", sentence: "הלכנו בתוך ה___." },
+                    { id: 520, word: "הצטלם", ar: "تصوّر", def: "Photo", sentence: "הוא ___ ליד המגדל." },
+                    { id: 521, word: "פעילים", ar: "نشطاء", def: "Active", sentence: "הם ___ מאוד בקהילה." },
+                    { id: 522, word: "טריטוריה", ar: "إقليم", def: "Territory", sentence: "האריה שומר על ה___ שלו." },
+                    { id: 523, word: "תרומה", ar: "تبرع", def: "Contribution", sentence: "הוא נתן ___ נדיבה." },
+                    { id: 524, word: "ניסוי", ar: "تجربة", def: "Experiment", sentence: "העורך עשה ___ במעבדה." },
+                    { id: 525, word: "חיוני", ar: "حيوي", def: "Vital", sentence: "מים הם דבר ___ לחיים." }
+                ],
+                ב: [
+                    { id: 601, word: "יחסי חיבה", ar: "علاقات مودة", def: "Affection", sentence: "יש ביניהם ___." },
+                    { id: 602, word: "לשיפור", ar: "لتحسين", def: "Improvement", sentence: "הוא עובד ___ המצב." },
+                    { id: 603, word: "בית גידול", ar: "موطن", def: "Habitat", sentence: "הנהר הוא ___ לחיות רבות." },
+                    { id: 604, word: "משום כך", ar: "بسبب ذلك", def: "Therefore", sentence: "היה גשם, ___ נשארנו בבית." },
+                    { id: 605, word: "מאמר", ar: "مقال", def: "Article", sentence: "קראתי ___ מעניין בעיתון." },
+                    { id: 606, word: "מראה מוזר", ar: "مظهر غريب", def: "Strange look", sentence: "זה היה ___ בהחלט." },
+                    { id: 607, word: "דו-קיום", ar: "تعايش", def: "Coexistence", sentence: "אנחנו שואפים ל___ בשלום." },
+                    { id: 608, word: "נפוץ", ar: "شائع", def: "Common", sentence: "זהו פרח ___ מאוד ביער." },
+                    { id: 609, word: "מערכת", ar: "منظومة", def: "System", sentence: "ה___ האקולוגית נפגעה." },
+                    { id: 610, word: "תוקפנות", ar: "عدوانية", def: "Aggression", sentence: "חשוב להימנע מ___." },
+                    { id: 611, word: "עדינים", ar: "رقيقون", def: "Delicate", sentence: "הפרחים האלו ___ מאוד." },
+                    { id: 612, word: "התחממות גלובלית", ar: "الاحتباس الحراري", def: "Warming", sentence: "___ היא בעיה קשה." },
+                    { id: 613, word: "אמונה תפלה", ar: "خرافة", def: "Superstition", sentence: "זו סתם ___ עתיקה." },
+                    { id: 614, word: "סבלנות", ar: "صبر", def: "Patience", sentence: "דרושה הרבה ___ להצלחה." },
+                    { id: 615, word: "שיתוף פעולה", ar: "تعاون", def: "Cooperation", sentence: "היה ___ מצוין בינינו." },
+                    { id: 616, word: "אינטליגנטי", ar: "ذكي", def: "Intelligent", sentence: "הוא ילד ___ ומוכשר." },
+                    { id: 617, word: "סודי", ar: "سري", def: "Secret", sentence: "המסמך הזה הוא ___." },
+                    { id: 618, word: "התערבות האדם", ar: "تدخل الإنسان", def: "Human intervention", sentence: "הטבע נפגע בגלל ___." },
+                    { id: 619, word: "ייחודי", ar: "فريد", def: "Unique", sentence: "לכל אדם יש כישרון ___." },
+                    { id: 620, word: "מגוון ביולוגי", ar: "تنوع بيولوجى", def: "Biodiversity", sentence: "חשוב לשמור על ה___." },
+                    { id: 621, word: "פגיעות", ar: "هشاشة", def: "Vulnerability", sentence: "הוא הראה סימני ___." },
+                    { id: 622, word: "בעיני הציבור", ar: "فى نظر الجمهور", def: "Public eye", sentence: "הוא מוערך מאוד ___." },
+                    { id: 623, word: "מרושע", ar: "شرير", def: "Wicked", sentence: "הוא התנהג באופן ___." },
+                    { id: 624, word: "גידולים חקלאיים", ar: "محاصيل زراعية", def: "Crops", sentence: "החקלאי דואג ל___." },
+                    { id: 625, word: "הקיפו", ar: "أحاطوا", def: "Surround", sentence: "הקיפו את המבנה." }
+                ],
+                ג: [
+                    { id: 701, word: "זיהום", ar: "تلوث", def: "Pollution", sentence: "יש הרבה ___ בנהר." },
+                    { id: 702, word: "השערה", ar: "فرضية", def: "Hypothesis", sentence: "המדען בודק את ה___ שלו." },
+                    { id: 703, word: "מפלצת", ar: "وحش", def: "Monster", sentence: "הילד פחד מה___ בסיפור." },
+                    { id: 704, word: "תוחלת חיים", ar: "متوسط العمر", def: "Life span", sentence: "ה___ עלתה בשנים האחרונות." },
+                    { id: 705, word: "צופה", ar: "يشاهد", def: "Watching", sentence: "הוא ___ בטלוויזיה." },
+                    { id: 706, word: "חוקר", ar: "باحث", def: "Researcher", sentence: "ה___ גילה ממצאים חדשים." },
+                    { id: 707, word: "מינים", ar: "أنواع", def: "Species", sentence: "יש אלפי ___ של ציפורים." },
+                    { id: 708, word: "תיעוד", ar: "توثيق", def: "Records", sentence: "קיים ___ מלא של האירוע." },
+                    { id: 709, word: "תעלומות", ar: "ألغاز", def: "Mysteries", sentence: "העולם מלא ב___." },
+                    { id: 710, word: "מאמינים", ar: "يؤمنون", def: "Believers", sentence: "אנשים רבים ___ בטוב." },
+                    { id: 711, word: "ציידים", ar: "صيادون", def: "Hunters", sentence: "ה___ יצאו ליער." },
+                    { id: 712, word: "נוסעים", ar: "مسافرون", def: "Travelers", sentence: "ה___ מחכים לרכبت." },
+                    { id: 713, word: "אגדות", ar: "أساطير", def: "Legends", sentence: "סבתא סיפרה לנו ___." },
+                    { id: 714, word: "אישיות", ar: "شخصية", def: "Personality", sentence: "יש לה ___ קורנת." },
+                    { id: 715, word: "מטרה", ar: "هدف", def: "Goal", sentence: "מה ה___ העיקרית שלך?" },
+                    { id: 716, word: "מסוים", ar: "معين", def: "Specific", sentence: "במקרה ___ זה יכול לעבוד." },
+                    { id: 717, word: "תקשורת", ar: "اتصال", def: "Communication", sentence: "טובה חשובה לזוגיות." },
+                    { id: 718, word: "מממנים", ar: "يمولون", def: "Funding", sentence: "הם ___ את הפרויקט." },
+                    { id: 719, word: "מארגנים", ar: "ينظمون", def: "Organizers", sentence: "ה___ הכינו את האולם." },
+                    { id: 720, word: "ביטחון עצמי", ar: "ثقة بالنفس", def: "Confidence", sentence: "חשוב שיהיה לך ___." },
+                    { id: 721, word: "הופעה", ar: "ظهور", def: "Show", sentence: "ה___ שלו היתה מרשימה." },
+                    { id: 722, word: "כישרון", ar: "موهبة", def: "Talent", sentence: "יש לו ___ מוזיקלי נדיר." },
+                    { id: 723, word: "הצלחה", ar: "نجاح", def: "Success", sentence: "עבודה קשה מוביلة ל___." },
+                    { id: 724, word: "מאבק", ar: "نضال", def: "Struggle", sentence: "ה___ לשוויון נמשך." },
+                    { id: 725, word: "ניצחון", ar: "فوز", def: "Victory", sentence: "חגגנו את ה___ הגדול." }
+                ],
+                ד: [
+                    { id: 801, word: "תקווה", ar: "أمل", def: "Hope", sentence: "תמיד יש ___ לעתיד טוב." },
+                    { id: 802, word: "אומץ", ar: "شجاعة", def: "Courage", sentence: "צריך ___ כדי לשנות." },
+                    { id: 803, word: "סקרנות", ar: "فضول", def: "Curiosity", sentence: "___ היא המנוע ללמידה." },
+                    { id: 804, word: "ידע", ar: "معرفة", def: "Knowledge", sentence: "___ הוא כוח." },
+                    { id: 805, word: "חופש", ar: "حرية", def: "Freedom", sentence: "כל אדם זכאי ל___." },
+                    { id: 806, word: "צדק", ar: "عدالة", def: "Justice", sentence: "אנחנו נלחמים למען ה___." },
+                    { id: 807, word: "שלום", ar: "سلام", def: "Peace", sentence: "העולם זקוק ל___." },
+                    { id: 808, word: "כבוד", ar: "احترام", def: "Respect", sentence: "יש לתת ___ לכל אדם." },
+                    { id: 809, word: "אחריות", ar: "مسؤولية", def: "Responsibility", sentence: "לקחתי ___ על הטעות." },
+                    { id: 810, word: "משמעות", ar: "معنى", def: "Meaning", sentence: "מה ה___ של החיים?" },
+                    { id: 811, word: "ערכים", ar: "قيم", def: "Values", sentence: "החינוך מבוסס על ___." },
+                    { id: 812, word: "קהילה", ar: "مجتمع", def: "Community", sentence: "הוא תורם רבות ל___." },
+                    { id: 813, word: "מסורת", ar: "تقليد", def: "Tradition", sentence: "זוהי ___ משפחתית עתיקה." },
+                    { id: 814, word: "שינוי", ar: "تغيير", def: "Change", sentence: "הגיע הזמן לעשות ___." },
+                    { id: 815, word: "הזדמנות", ar: "فرصة", def: "Opportunity", sentence: "אל תפספס את ה___ הזו." },
+                    { id: 816, word: "פיתוח", ar: "تطوير", def: "Development", sentence: "הוא עוסק ב___ תוכנה." },
+                    { id: 817, word: "יצירתיות", ar: "إبداع", def: "Creativity", sentence: "___ חשובה בכל תחום." },
+                    { id: 818, word: "מנהיגות", ar: "قيادة", def: "Leadership", sentence: "יש לו תכונות ___." },
+                    { id: 819, word: "דוגמה", ar: "مثال", def: "Example", sentence: "הוא ___ ומופת לכולנו." },
+                    { id: 820, word: "השפעה", ar: "تأثير", def: "Influence", sentence: "יש לו ___ גדולה עלי." },
+                    { id: 821, word: "חזון", ar: "رؤية", def: "Vision", sentence: "למנהיג חייב להיות ___." },
+                    { id: 822, word: "משימה", ar: "مهمة", def: "Mission", sentence: "השלמנו את ה___ בהצלحة." },
+                    { id: 823, word: "הישג", ar: "إنجاز", def: "Achievement", sentence: "זהו ___ אדיר עבורך." },
+                    { id: 824, word: "שותפות", ar: "شراكة", def: "Partnership", sentence: "הקמנו ___ עסקית חדשה." },
+                    { id: 825, word: "עתיד", ar: "مستقبل", def: "Future", sentence: "אנחנו בונים את ה___." }
+                ]
+            }
         };
 
         const App = () => {
             const [user, setUser] = useState(null);
             const [view, setView] = useState('login'); 
-            const [gameConfig, setGameConfig] = useState({ difficulty: 'Medium', list: 'A', mode: 'English-Arabic' });
+            const [lang, setLang] = useState('English');
+            const [gameConfig, setGameConfig] = useState({ difficulty: 'Medium', list: 'A', mode: 'Word-Arabic' });
             const [cards, setCards] = useState([]);
             const [flipped, setFlipped] = useState([]);
             const [matched, setMatched] = useState([]);
@@ -172,22 +330,59 @@
             
             const timerRef = useRef(null);
             const userRef = useRef(null);
+            const langRef = useRef(lang);
+            useEffect(() => { langRef.current = lang; }, [lang]);
+
+            const isHeb = lang === 'Hebrew';
+
+            const UI = {
+                title: isHeb ? "מאסטר אוצר מילים" : "VOCAB MASTER",
+                subtitle: "Fouad Nasir",
+                namePlaceholder: isHeb ? "שם התלמיד" : "Student Name",
+                classPlaceholder: isHeb ? "כיתה (למשל יא2)" : "Class (e.g. 11B)",
+                enterBtn: isHeb ? "כניסה למערכת" : "ENTER PORTAL",
+                welcome: isHeb ? "ברוך הבא, " : "Welcome, ",
+                changeLang: isHeb ? "החלף שפה" : "CHANGE LANGUAGE",
+                vocabList: isHeb ? "רשימת מילים" : "Vocab List",
+                speed: isHeb ? "קוֹשִׁי" : "Difficulty",
+                mode: isHeb ? "מצב משחק" : "Mode",
+                practiceTitle: isHeb ? "תרגול זיכרון" : "Memory Practice",
+                practiceDesc: isHeb ? "חזרה על המילים באמצעות התאמת 10 זוגות" : "Review words through matching 10 pairs.",
+                testTitle: isHeb ? "ביצוע מבחן" : "Take a Test",
+                testDesc: isHeb ? "מבחן הערכה (10 שאלות)" : "10-question assessment.",
+                quit: isHeb ? "יציאה" : "Quit",
+                scoreLabel: isHeb ? "ניקוד: " : "Score: ",
+                submit: isHeb ? "הגש מבחן" : "SUBMIT TEST",
+                tryAgain: isHeb ? "נסה שוב" : "Try Again",
+                mainMenu: isHeb ? "חזרה לתפריט ראשי" : "Return to Main Menu",
+                finalScore: isHeb ? "ציון סופי" : "Final Score",
+                question: isHeb ? "שאלה" : "Question"
+            };
 
             const formatTimeLabel = (s) => `${Math.floor(s/60)}:${(s%60).toString().padStart(2, '0')}`;
 
-            const triggerSync = async (payloadExtras) => {
+            const triggerSync = async (modeName, finalScore, timeSpent) => {
                 setSyncing(true);
-                const payload = {
-                    "Timestamp": new Date().toLocaleString(),
-                    "Student Name": userRef.current?.name,
-                    "Class": userRef.current?.className,
-                    "List": gameConfig.list,
-                    "Difficulty": gameConfig.difficulty,
-                    ...payloadExtras
-                };
+                const payload = [
+                    new Date().toLocaleString('en-GB'),
+                    userRef.current?.name,
+                    userRef.current?.className,
+                    langRef.current === 'Hebrew' ? 'Hebrew' : 'English',
+                    modeName,
+                    gameConfig.list,
+                    gameConfig.difficulty,
+                    finalScore,
+                    timeSpent
+                ];
+
                 try {
-                    await fetch(GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                } catch (e) { console.error(e); }
+                    await fetch(GOOGLE_SHEET_URL, { 
+                        method: 'POST', 
+                        mode: 'no-cors', 
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload) 
+                    });
+                } catch (e) { console.error("Sync Error:", e); }
                 setSyncing(false);
             };
 
@@ -195,36 +390,37 @@
                 const name = document.getElementById('nameIn')?.value;
                 const cls = document.getElementById('classIn')?.value;
                 if (!name || !cls) return;
-                const userData = { name, className: cls };
-                userRef.current = userData;
-                setUser(userData);
+                userRef.current = { name, className: cls };
+                setUser(userRef.current);
                 setView('menu');
             };
 
             const startGame = () => {
-                const list = VOCAB_LISTS[gameConfig.list] || VOCAB_LISTS.A;
-                const duration = gameConfig.difficulty === 'Easy' ? 180 : gameConfig.difficulty === 'Medium' ? 120 : 60;
-                setTimeLeft(duration); setScore(0); setMatched([]); setFlipped([]); setIsGameOver(false); setView('game');
-                const subset = [...list].sort(() => 0.5 - Math.random()).slice(0, 6);
+                const list = VOCAB_DATA[lang][gameConfig.list];
+                const baseTime = 180;
+                setTimeLeft(baseTime); 
+                setScore(0); setMatched([]); setFlipped([]); setIsGameOver(false); setView('game');
+                
+                const subset = [...list].sort(() => 0.5 - Math.random()).slice(0, 10);
                 const newCards = [];
                 subset.forEach(item => {
-                    newCards.push({ id: item.id, text: item.en, type: 'en', uid: `e-${item.id}` });
-                    const matchText = gameConfig.mode === 'English-Arabic' ? item.ar : item.def;
-                    newCards.push({ id: item.id, text: matchText, type: 'match', uid: `m-${item.id}`, isAr: gameConfig.mode === 'English-Arabic' });
+                    newCards.push({ id: item.id, text: item.word, type: 'native', uid: `n-${item.id}`, isHeb: lang === 'Hebrew' });
+                    const matchText = gameConfig.mode === 'Word-Arabic' ? item.ar : item.def;
+                    newCards.push({ id: item.id, text: matchText, type: 'match', uid: `m-${item.id}`, isAr: gameConfig.mode === 'Word-Arabic' });
                 });
                 setCards(newCards.sort(() => 0.5 - Math.random()));
             };
 
             const startTest = () => {
                 setTestResult(null); setTestAnswers({}); setTimeLeft(300);
-                const fullList = VOCAB_LISTS[gameConfig.list] || VOCAB_LISTS.A;
+                const fullList = VOCAB_DATA[lang][gameConfig.list];
                 const shuffled = [...fullList].sort(() => 0.5 - Math.random());
                 const questions = shuffled.slice(0, 10).map((item, index) => ({
                     id: item.id,
                     type: index < 5 ? 'multiple' : 'dropdown',
-                    correct: item.en,
+                    correct: item.word,
                     sentence: item.sentence,
-                    options: [item.en, ...fullList.filter(x => x.id !== item.id).sort(() => 0.5 - Math.random()).slice(0, 3).map(x => x.en)].sort(() => 0.5 - Math.random())
+                    options: [item.word, ...fullList.filter(x => x.id !== item.id).sort(() => 0.5 - Math.random()).slice(0, 3).map(x => x.word)].sort(() => 0.5 - Math.random())
                 }));
                 setTestQuestions(questions);
                 setView('test');
@@ -234,7 +430,8 @@
                 let p = 0;
                 testQuestions.forEach(q => { if (testAnswers[q.id] === q.correct) p += 10; });
                 setTestResult(p);
-                triggerSync({ "Mode": "Test", "Score": p, "Time": formatTimeLabel(300 - timeLeft) });
+                const timeStr = formatTimeLabel(300 - timeLeft);
+                triggerSync("Test", p, timeStr);
             };
 
             useEffect(() => {
@@ -242,76 +439,83 @@
                     timerRef.current = setInterval(() => setTimeLeft(t => t - 1), 1000);
                 }
                 if (timeLeft === 0 && user && (view === 'game' || (view === 'test' && testResult === null))) {
-                    if (view === 'game') setIsGameOver(true);
-                    else submitTest();
+                    if (view === 'game') {
+                        setIsGameOver(true);
+                        triggerSync("Memory Practice", score, "Time Up");
+                    } else submitTest();
                 }
                 return () => clearInterval(timerRef.current);
             }, [user, view, timeLeft, testResult]);
 
-            const getEncouragement = (score) => {
-                const cat = score >= 90 ? 'excellent' : score >= 70 ? 'good' : score >= 50 ? 'fair' : 'low';
-                const arr = ENCOURAGEMENTS[cat];
-                return arr[Math.floor(Math.random() * arr.length)];
-            };
-
             if (view === 'login') return (
                 <div className="min-h-[80vh] flex items-center justify-center">
                     <div className="bg-white rounded-[2rem] p-8 w-full max-w-sm shadow-2xl text-center border-t-8 border-indigo-600">
-                        <h1 className="text-4xl font-black text-indigo-900 mb-1">VOCAB MASTER</h1>
-                        <p className="text-indigo-600 font-bold mb-6 italic">Fouad Nasir</p>
+                        <h1 className={`text-4xl font-black text-indigo-900 mb-1 ${isHeb ? 'hebrew' : ''}`}>{UI.title}</h1>
+                        <p className="text-indigo-600 font-bold mb-6 italic">{UI.subtitle}</p>
                         <div className="space-y-4">
-                            <input id="nameIn" placeholder="Student Name" className="w-full p-4 bg-slate-100 rounded-xl font-bold border-2 border-transparent focus:border-indigo-500 outline-none text-lg" />
-                            <input id="classIn" placeholder="Class (e.g. 11B)" className="w-full p-4 bg-slate-100 rounded-xl font-bold border-2 border-transparent focus:border-indigo-500 outline-none text-lg" />
-                            <button onClick={handleLogin} className="w-full py-4 bg-indigo-600 text-white rounded-xl font-black text-xl shadow-lg">ENTER PORTAL</button>
+                            <input id="nameIn" placeholder={UI.namePlaceholder} className={`w-full p-4 bg-slate-100 rounded-xl font-bold border-2 border-transparent focus:border-indigo-500 outline-none text-lg ${isHeb ? 'hebrew text-right' : ''}`} />
+                            <input id="classIn" placeholder={UI.classPlaceholder} className={`w-full p-4 bg-slate-100 rounded-xl font-bold border-2 border-transparent focus:border-indigo-500 outline-none text-lg ${isHeb ? 'hebrew text-right' : ''}`} />
+                            <div className="flex gap-2">
+                                <button onClick={() => { setLang('English'); setGameConfig({...gameConfig, list: 'A'}); }} className={`flex-1 py-3 rounded-xl font-black transition-all ${lang === 'English' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-200 text-slate-500'}`}>ENGLISH</button>
+                                <button onClick={() => { setLang('Hebrew'); setGameConfig({...gameConfig, list: 'א'}); }} className={`flex-1 py-3 rounded-xl font-black transition-all ${lang === 'Hebrew' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-200 text-slate-500'} hebrew`}>עברית</button>
+                            </div>
+                            <button onClick={handleLogin} className={`w-full py-4 bg-indigo-600 text-white rounded-xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-all ${isHeb ? 'hebrew' : ''}`}>{UI.enterBtn}</button>
                         </div>
                     </div>
                 </div>
             );
 
             if (view === 'menu') return (
-                <div className="app-container space-y-4 py-8">
+                <div className={`app-container space-y-4 py-8 ${isHeb ? 'rtl' : ''}`}>
                     <div className="bg-white rounded-[2rem] p-6 shadow-xl">
-                        <h2 className="text-2xl font-black text-indigo-950 mb-4">Welcome, {user.name}</h2>
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="flex flex-col">
+                                <h2 className={`text-2xl font-black text-indigo-950 ${isHeb ? 'hebrew' : ''}`}>{UI.welcome}{user.name}</h2>
+                                <span className={`text-indigo-500 font-bold text-sm tracking-widest ${isHeb ? 'hebrew' : ''}`}>{lang === 'Hebrew' ? 'עברית' : 'English'}</span>
+                            </div>
+                            <button onClick={() => setView('login')} className={`text-xs bg-slate-100 px-3 py-2 rounded-lg text-indigo-600 font-black ${isHeb ? 'hebrew' : ''}`}>{UI.changeLang}</button>
+                        </div>
                         <div className="grid grid-cols-2 gap-3 mb-4">
                             <div className="space-y-1">
-                                <label className="text-xs font-black text-indigo-500 uppercase ml-1">Vocab List</label>
-                                <select className="w-full p-3 bg-slate-50 rounded-xl font-black text-lg outline-none border border-slate-200" value={gameConfig.list} onChange={e => setGameConfig({...gameConfig, list: e.target.value})}>
-                                    <option value="A">LIST A</option><option value="B">LIST B</option><option value="C">LIST C</option><option value="D">LIST D</option>
+                                <label className={`text-xs font-black text-indigo-500 uppercase ml-1 ${isHeb ? 'hebrew text-right block' : ''}`}>{UI.vocabList}</label>
+                                <select className={`w-full p-3 bg-slate-50 rounded-xl font-black text-lg outline-none border border-slate-200 ${isHeb ? 'hebrew' : ''}`} value={gameConfig.list} onChange={e => setGameConfig({...gameConfig, list: e.target.value})}>
+                                    {Object.keys(VOCAB_DATA[lang]).map(l => <option key={l} value={l}>{isHeb ? 'רשימה' : 'LIST'} {l}</option>)}
                                 </select>
                             </div>
                             <div className="space-y-1">
-                                <label className="text-xs font-black text-indigo-500 uppercase ml-1">Speed</label>
-                                <select className="w-full p-3 bg-slate-50 rounded-xl font-black text-lg outline-none border border-slate-200" value={gameConfig.difficulty} onChange={e => setGameConfig({...gameConfig, difficulty: e.target.value})}>
-                                    <option>Easy</option><option>Medium</option><option>Hard</option>
+                                <label className={`text-xs font-black text-indigo-500 uppercase ml-1 ${isHeb ? 'hebrew text-right block' : ''}`}>{UI.speed}</label>
+                                <select className={`w-full p-3 bg-slate-50 rounded-xl font-black text-lg outline-none border border-slate-200 ${isHeb ? 'hebrew' : ''}`} value={gameConfig.difficulty} onChange={e => setGameConfig({...gameConfig, difficulty: e.target.value})}>
+                                    <option>{isHeb ? 'קל' : 'Easy'}</option><option>{isHeb ? 'בינוני' : 'Medium'}</option><option>{isHeb ? 'קשה' : 'Hard'}</option>
                                 </select>
                             </div>
                         </div>
                         <div className="space-y-1">
-                            <label className="text-xs font-black text-indigo-500 uppercase ml-1">Mode</label>
-                            <select className="w-full p-3 bg-slate-50 rounded-xl font-black text-lg outline-none border border-slate-200" value={gameConfig.mode} onChange={e => setGameConfig({...gameConfig, mode: e.target.value})}>
-                                <option>English-Arabic</option><option>Word-Definition</option>
+                            <label className={`text-xs font-black text-indigo-500 uppercase ml-1 ${isHeb ? 'hebrew text-right block' : ''}`}>{UI.mode}</label>
+                            <select className={`w-full p-3 bg-slate-50 rounded-xl font-black text-lg outline-none border border-slate-200 ${isHeb ? 'hebrew' : ''}`} value={gameConfig.mode} onChange={e => setGameConfig({...gameConfig, mode: e.target.value})}>
+                                <option value="Word-Arabic">{isHeb ? 'מילה-ערבית' : 'Word-Arabic'}</option>
+                                <option value="Word-Definition">{isHeb ? 'מילה-הגדרה' : 'Word-Definition'}</option>
                             </select>
                         </div>
                     </div>
-                    <button onClick={startGame} className="w-full p-6 bg-indigo-600 text-white rounded-[2rem] shadow-lg text-left">
-                        <h3 className="text-2xl font-black">Memory Practice</h3>
-                        <p className="text-indigo-200 text-sm">Review words through matching.</p>
+                    <button onClick={startGame} className={`w-full p-6 bg-indigo-600 text-white rounded-[2rem] shadow-lg hover:brightness-110 transition-all ${isHeb ? 'text-right' : 'text-left'}`}>
+                        <h3 className={`text-2xl font-black ${isHeb ? 'hebrew' : ''}`}>{UI.practiceTitle}</h3>
+                        <p className={`text-indigo-200 text-sm ${isHeb ? 'hebrew' : ''}`}>{UI.practiceDesc}</p>
                     </button>
-                    <button onClick={startTest} className="w-full p-6 bg-white text-indigo-900 rounded-[2rem] shadow-lg text-left border-2 border-indigo-600">
-                        <h3 className="text-2xl font-black">Take a Test</h3>
-                        <p className="text-slate-400 text-sm">10-question graded assessment.</p>
+                    <button onClick={startTest} className={`w-full p-6 bg-white text-indigo-900 rounded-[2rem] shadow-lg border-2 border-indigo-600 hover:bg-indigo-50 transition-all ${isHeb ? 'text-right' : 'text-left'}`}>
+                        <h3 className={`text-2xl font-black ${isHeb ? 'hebrew' : ''}`}>{UI.testTitle}</h3>
+                        <p className={`text-slate-400 text-sm ${isHeb ? 'hebrew' : ''}`}>{UI.testDesc}</p>
                     </button>
                 </div>
             );
 
             if (view === 'game') return (
-                <div className="app-container py-4 flex flex-col h-screen">
-                    <div className="flex justify-between items-center mb-4 bg-white/20 p-4 rounded-2xl">
-                        <span className="text-white font-black text-xl">{formatTimeLabel(timeLeft)}</span>
-                        <button onClick={() => setView('menu')} className="text-white font-bold text-xs uppercase bg-black/20 px-3 py-1 rounded-full">Quit</button>
-                        <span className="text-white font-black text-xl">Score: {score}</span>
+                <div className={`app-container py-4 flex flex-col min-h-screen ${isHeb ? 'rtl' : ''}`}>
+                    <div className="flex justify-between items-center mb-4 bg-white/20 p-4 rounded-2xl sticky top-0 z-10 backdrop-blur-md border border-white/20 shadow-lg">
+                        <span className="text-white font-black text-xl tabular-nums">{formatTimeLabel(timeLeft)}</span>
+                        <button onClick={() => setView('menu')} className={`text-white font-bold text-xs uppercase bg-black/20 px-4 py-2 rounded-full ${isHeb ? 'hebrew' : ''}`}>{UI.quit}</button>
+                        <span className={`text-white font-black text-xl ${isHeb ? 'hebrew' : ''}`}>{UI.scoreLabel}{score}</span>
                     </div>
-                    <div className="grid grid-cols-2 gap-3 flex-1 pb-10">
+                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 pb-24">
                         {cards.map((card, i) => {
                             const show = flipped.includes(i) || matched.includes(card.id);
                             return (
@@ -323,19 +527,21 @@
                                         if (c1.id === c2.id && c1.type !== c2.type) {
                                             const newMatched = [...matched, c1.id];
                                             setMatched(newMatched); 
-                                            setScore(s => s + 10); 
+                                            const newScore = Math.min(100, (newMatched.length * 10));
+                                            setScore(newScore); 
                                             setFlipped([]);
-                                            if (newMatched.length === cards.length/2) {
+                                            if (newMatched.length === 10) {
                                                 setIsGameOver(true);
-                                                triggerSync({ "Mode": "Memory Game", "Score": score + 10, "Time": formatTimeLabel(timeLeft) });
+                                                const timeSpent = formatTimeLabel(180 - timeLeft);
+                                                triggerSync("Memory Practice", 100, timeSpent);
                                             }
                                         } else { setTimeout(() => setFlipped([]), 1000); }
                                     }
-                                }} className="aspect-[4/3] perspective-1000">
+                                }} className="aspect-[3/4] perspective-1000">
                                     <div className={`card-inner ${show ? 'card-flipped' : ''} h-full`}>
-                                        <div className="card-front text-4xl font-black">?</div>
+                                        <div className="card-front">?</div>
                                         <div className={`card-back ${matched.includes(card.id) ? 'bg-emerald-500 border-emerald-400 text-white' : 'text-indigo-900'}`}>
-                                            <span className={`font-black uppercase text-base ${card.isAr ? 'arabic text-xl' : ''}`}>{card.text}</span>
+                                            <span className={`font-black uppercase leading-tight px-1 ${card.isAr ? 'arabic text-lg' : card.isHeb ? 'hebrew text-lg' : 'text-base'}`}>{card.text}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -344,11 +550,11 @@
                     </div>
                     {isGameOver && (
                         <div className="fixed inset-0 bg-indigo-950/90 flex items-center justify-center p-6 z-50">
-                            <div className="bg-white rounded-[2rem] p-8 text-center w-full max-w-sm">
-                                <h2 className="text-3xl font-black text-indigo-900 mb-2">Well Done!</h2>
+                            <div className="bg-white rounded-[2rem] p-8 text-center w-full max-w-sm shadow-2xl">
+                                <h2 className={`text-3xl font-black text-indigo-900 mb-2 ${isHeb ? 'hebrew' : ''}`}>DONE!</h2>
                                 <div className="text-6xl font-black text-indigo-600 mb-6">{score}</div>
-                                <button onClick={startGame} className="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold mb-3 text-lg">Try Again</button>
-                                <button onClick={() => setView('menu')} className="text-slate-400 font-bold uppercase text-xs">Return to Main Menu</button>
+                                <button onClick={startGame} className={`w-full py-4 bg-indigo-600 text-white rounded-xl font-bold mb-3 text-lg ${isHeb ? 'hebrew' : ''}`}>{UI.tryAgain}</button>
+                                <button onClick={() => setView('menu')} className={`text-slate-400 font-bold uppercase text-xs ${isHeb ? 'hebrew' : ''}`}>{UI.mainMenu}</button>
                             </div>
                         </div>
                     )}
@@ -356,12 +562,11 @@
             );
 
             if (view === 'test') return (
-                <div className="app-container py-4">
+                <div className={`app-container py-4 ${isHeb ? 'rtl' : ''}`}>
                     <div className="bg-white rounded-[2rem] shadow-xl p-8 mb-10 min-h-[80vh]">
                         <header className="flex justify-between items-end mb-8 border-b-2 border-slate-100 pb-4">
-                            <div>
-                                <h2 className="text-2xl font-black text-indigo-950 uppercase">LIST {gameConfig.list} TEST</h2>
-                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Assessment</p>
+                            <div className={isHeb ? 'text-right' : ''}>
+                                <h2 className={`text-2xl font-black text-indigo-950 uppercase ${isHeb ? 'hebrew' : ''}`}>{lang === 'Hebrew' ? 'מבחן' : 'TEST'} {gameConfig.list}</h2>
                             </div>
                             <span className="text-3xl font-black text-indigo-600 tabular-nums">{formatTimeLabel(timeLeft)}</span>
                         </header>
@@ -370,49 +575,44 @@
                             <div className="space-y-12">
                                 {testQuestions.map((q, idx) => (
                                     <div key={q.id} className="space-y-4">
-                                        <div className="flex items-center gap-3 text-indigo-500 font-black text-sm uppercase">
-                                            <span className="bg-indigo-100 px-3 py-1 rounded-lg">Question {idx + 1}</span>
+                                        <div className={`flex items-center gap-3 text-indigo-500 font-black text-sm uppercase ${isHeb ? 'flex-row-reverse' : ''}`}>
+                                            <span className={`bg-indigo-100 px-3 py-1 rounded-lg ${isHeb ? 'hebrew' : ''}`}>{UI.question} {idx + 1}</span>
                                             <div className="h-[2px] flex-1 bg-slate-100"></div>
                                         </div>
                                         {q.type === 'multiple' ? (
                                             <div className="space-y-5">
-                                                <p className="text-2xl font-bold text-slate-800 leading-snug">
+                                                <p className={`text-xl font-bold text-slate-800 leading-snug ${isHeb ? 'hebrew text-right' : ''}`}>
                                                     {q.sentence.replace('___', '__________')}
                                                 </p>
                                                 <div className="grid grid-cols-2 gap-3">
                                                     {q.options.map(opt => (
-                                                        <button key={opt} onClick={() => setTestAnswers({...testAnswers, [q.id]: opt})} className={`p-4 rounded-xl text-lg font-black border-2 transition-all ${testAnswers[q.id] === opt ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-slate-50 border-transparent text-slate-600'}`}>{opt}</button>
+                                                        <button key={opt} onClick={() => setTestAnswers({...testAnswers, [q.id]: opt})} className={`p-4 rounded-xl text-lg font-black border-2 transition-all ${isHeb ? 'hebrew' : ''} ${testAnswers[q.id] === opt ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-slate-50 border-transparent text-slate-600 hover:bg-slate-100'}`}>{opt}</button>
                                                     ))}
                                                 </div>
                                             </div>
                                         ) : (
                                             <div className="space-y-4">
-                                                <p className="text-2xl font-bold text-slate-800 leading-relaxed">
-                                                    {q.sentence.split('___')[0]}
-                                                    <select className="gap-select" value={testAnswers[q.id] || ""} onChange={(e) => setTestAnswers({...testAnswers, [q.id]: e.target.value})}>
+                                                <p className={`text-xl font-bold text-slate-800 leading-relaxed ${isHeb ? 'hebrew text-right' : ''}`}>
+                                                    {isHeb ? q.sentence.split('___')[1] : q.sentence.split('___')[0]}
+                                                    <select className={`gap-select ${isHeb ? 'hebrew' : ''}`} value={testAnswers[q.id] || ""} onChange={(e) => setTestAnswers({...testAnswers, [q.id]: e.target.value})}>
                                                         <option value="" disabled>---</option>
                                                         {q.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                                     </select>
-                                                    {q.sentence.split('___')[1]}
+                                                    {isHeb ? q.sentence.split('___')[0] : q.sentence.split('___')[1]}
                                                 </p>
                                             </div>
                                         )}
                                     </div>
                                 ))}
-                                <button onClick={submitTest} className="w-full py-6 bg-indigo-600 text-white rounded-2xl font-black text-2xl shadow-lg flex items-center justify-center gap-4 hover:bg-indigo-700 transition-all">
-                                    {syncing && <div className="spinner"></div>} SUBMIT TEST
+                                <button onClick={submitTest} disabled={syncing} className={`w-full py-6 bg-indigo-600 text-white rounded-2xl font-black text-2xl shadow-lg flex items-center justify-center gap-4 ${isHeb ? 'hebrew' : ''}`}>
+                                    {syncing && <div className="spinner"></div>} {UI.submit}
                                 </button>
                             </div>
                         ) : (
                             <div className="text-center py-10">
-                                <div className="text-xs font-black text-indigo-400 uppercase tracking-widest mb-2">Final Score</div>
-                                <div className="text-[9rem] font-black text-indigo-900 leading-none mb-6">{testResult}</div>
-                                <div className="bg-indigo-50 p-8 rounded-[2.5rem] mb-10 border-2 border-indigo-100">
-                                    <p className="text-indigo-950 font-black text-2xl italic leading-tight">
-                                        "{getEncouragement(testResult)}"
-                                    </p>
-                                </div>
-                                <button onClick={() => setView('menu')} className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xl uppercase tracking-wider">Return to Main Menu</button>
+                                <div className={`text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ${isHeb ? 'hebrew' : ''}`}>{UI.finalScore}</div>
+                                <div className="text-[9rem] font-black text-indigo-900 leading-none mb-6 tabular-nums">{testResult}</div>
+                                <button onClick={() => setView('menu')} className={`w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xl uppercase tracking-wider ${isHeb ? 'hebrew' : ''}`}>{UI.mainMenu}</button>
                             </div>
                         )}
                     </div>
