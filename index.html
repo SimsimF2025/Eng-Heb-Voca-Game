@@ -37,33 +37,32 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 1rem;
-            padding: 0.75rem;
+            border-radius: 0.75rem;
+            padding: 0.5rem;
             text-align: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         .card-front { 
             background: white; 
-            border: 3px solid #e2e8f0; 
+            border: 2px solid #e2e8f0; 
             color: #4338ca; 
-            font-size: 2rem; 
+            font-size: 1.5rem; 
             font-weight: 900; 
         }
         .card-back { 
             transform: rotateY(180deg); 
             background: #ffffff; 
-            border: 3px solid #4338ca; 
+            border: 2px solid #4338ca; 
             overflow: hidden;
         }
 
-        /* Auto-sizing text container */
         .card-text {
             display: -webkit-box;
-            -webkit-line-clamp: 4;
+            -webkit-line-clamp: 5;
             -webkit-box-orient: vertical;
             overflow: hidden;
             word-wrap: break-word;
-            line-height: 1.2;
+            line-height: 1.1;
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -90,19 +89,19 @@
         
         .app-container { max-width: 1000px; margin: 0 auto; }
 
-        /* Responsive Grid Tweaks */
+        /* Responsive Grid: Forced 2 columns on mobile, 3 on tablet, 4+ on desktop */
         .game-grid {
             display: grid;
-            gap: 0.75rem;
-            grid-template-cols: repeat(2, 1fr); /* Default mobile: Big cards */
+            gap: 0.5rem;
+            grid-template-cols: repeat(2, 1fr);
         }
-        @media (min-width: 640px) {
+        @media (min-width: 600px) {
             .game-grid { grid-template-cols: repeat(3, 1fr); }
         }
-        @media (min-width: 768px) {
+        @media (min-width: 800px) {
             .game-grid { grid-template-cols: repeat(4, 1fr); }
         }
-        @media (min-width: 1024px) {
+        @media (min-width: 1000px) {
             .game-grid { grid-template-cols: repeat(5, 1fr); }
         }
     </style>
@@ -181,38 +180,36 @@
                     { id: 223, word: "discuss", ar: "يناقش", def: "Talk about something together", sentence: "Let's ___ this tomorrow." },
                     { id: 224, word: "disease", ar: "مرض", def: "Disorder of function in body", sentence: "They are fighting a rare ___." },
                     { id: 225, word: "distance", ar: "مسافة", def: "Amount of space between things", sentence: "The ___ is ten miles." }
-                ],
-                C: [], D: [] // Extended lists as per previous
+                ]
             },
             Hebrew: {
                 א: [
-                    { id: 501, word: "מתנפלים", ar: "ينقضون / يتهجمون", def: "התקפה פתאומית על מישהו", sentence: "הזאבים ___ על הטרף." },
+                    { id: 501, word: "מתנפלים", ar: "ينقضون / يتهجمון", def: "התקפה פתאומית על מישהו", sentence: "הזאבים ___ על הטרף." },
                     { id: 502, word: "צוף פרחים", ar: "رحيق الأزهار", def: "נוזל מתוק שדבורים אוספות", sentence: "הדבורים אוספות ___." },
                     { id: 503, word: "יערות", ar: "غابات", def: "שטחים גדולים מלאים בעצים", sentence: "יש הרבה חיות בתוך ___." },
                     { id: 504, word: "מקומות בילוי", ar: "أماكن ترفيه", def: "מקומות שאנשים הולכים להנות", sentence: "העיר מלאה ב___." },
                     { id: 505, word: "לפענח", ar: "فك الرموز", def: "למצוא פתרון לקוד או סוד", sentence: "ניסינו ___ את סוד המפה." },
                     { id: 506, word: "על טבעי", ar: "خارق للطبيعة", def: "דבר שאי אפשר להסביר במדע", sentence: "זה נראה כמו כוח ___." },
                     { id: 507, word: "מרתק", ar: "שייק / מעניין מאוד", def: "מושך את תשומת הלב מאוד", sentence: "הספר הזה פשוט ___." },
-                    { id: 508, word: "קראו", ar: "قرأوا / نادوا", def: "עשו פעולת קריאה בטקסט", sentence: "הילדים ___ את ההוראות." },
-                    { id: 509, word: "נדידה", ar: "هجرة", def: "מעבר של חיות ממקום למקום", sentence: "עכשיו זו עונת ה___ של הציפורים." },
-                    { id: 510, word: "הישרדות", ar: "بقاء", def: "היכולת להמשיך לחיות בקושי", sentence: "החיות נלחמות על ה___ שלהן." },
-                    { id: 511, word: "מדבריות", ar: "صحارى", def: "אזורים יבשים ללא הרבה מים", sentence: "הגמלים חיים ב___." },
-                    { id: 512, word: "טורף", ar: "مفترס", def: "חיה שאוכלת חיות אחרות", sentence: "האריה הוא ___ חזק." },
-                    { id: 513, word: "מחבק", ar: "يعانق", def: "סוגר את הידיים סביב מישהו", sentence: "הוא ___ את חברו לשלום." },
-                    { id: 514, word: "חושים מחודדים", ar: "حواس حادة", def: "יכולת ראייה או שמיעה מצוינת", sentence: "לכלבים יש ___." },
-                    { id: 515, word: "התנהגות", ar: "سلوك", def: "הדרך שבה אדם פועל", sentence: "ה___ שלו היתה מצוינת." },
-                    { id: 516, word: "למרות זאת", ar: "رغم ذلك", def: "ביטוי המראה ניגוד או קושי", sentence: "היה קשה, ___ הצלחנו." },
-                    { id: 517, word: "לשגשג", ar: "أن يزدهر", def: "להצליח ולפרוח מאוד", sentence: "העסק התחיל ___." },
-                    { id: 518, word: "מסקנות", ar: "استنتاجات", def: "דברים שמבינים בסוף תהליך", sentence: "הגענו ל___ בסוף המחקר." },
-                    { id: 519, word: "חשכה", ar: "ظلام", def: "מצב שבו אין אור בכלל", sentence: "הלכנו בתוך ה___." },
-                    { id: 520, word: "הצטלם", ar: "تصوّر", def: "עשה תמונה של עצמו", sentence: "הוא ___ ליד המגדל." },
-                    { id: 521, word: "פעילים", ar: "نشطاء", def: "אנשים שעושים הרבה למען מטרה", sentence: "הם ___ מאוד בקהילה." },
-                    { id: 522, word: "טריטוריה", ar: "إقليم", def: "שטח השייך לחיה או מדינה", sentence: "האריה שומר על ה___ שלו." },
-                    { id: 523, word: "תרומה", ar: "تبرع", def: "נתינה של כסף או עזרה", sentence: "הוא נתן ___ נדיבה." },
-                    { id: 524, word: "ניסוי", ar: "تجربة", def: "בדיקה מדעית של השערה", sentence: "העורך עשה ___ במעבדה." },
-                    { id: 525, word: "חיוני", ar: "حيوي", def: "דבר שאי אפשר בלעדיו", sentence: "מים הם דבר ___ לחיים." }
-                ],
-                ב: [] // Extended similarly
+                    { id: 508, word: "קראו", ar: "قرأوا / نادוא", def: "עשו פעולת קריאה בטקסט", sentence: "הילדים ___ את ההוראות." },
+                    { id: 509, word: "נדידה", ar: "הגירה", def: "מעבר של חיות ממקום למקום", sentence: "עכשיו זו עונת ה___ של הציפורים." },
+                    { id: 510, word: "הישרדות", ar: "הישרדות", def: "היכולת להמשיך לחיות בקושי", sentence: "החיות נלחמות על ה___ שלהן." },
+                    { id: 511, word: "מדבריות", ar: "מדבריות", def: "אזורים יבשים ללא הרבה מים", sentence: "הגמלים חיים ב___." },
+                    { id: 512, word: "טורף", ar: "טורף", def: "חיה שאוכלת חיות אחרות", sentence: "האריה הוא ___ חזק." },
+                    { id: 513, word: "מחבק", ar: "מחבק", def: "סוגר את הידיים סביב מישהו", sentence: "הוא ___ את חברו לשלום." },
+                    { id: 514, word: "חושים מחודדים", ar: "חושים מחודדים", def: "יכולת ראייה או שמיעה מצוינת", sentence: "לכלבים יש ___." },
+                    { id: 515, word: "התנהגות", ar: "סלוכ", def: "הדרך שבה אדם פועל", sentence: "ה___ שלו היתה מצוינת." },
+                    { id: 516, word: "למרות זאת", ar: "למרות זאת", def: "ביטוי המראה ניגוד או קושי", sentence: "היה קשה, ___ הצלחנו." },
+                    { id: 517, word: "לשגשג", ar: "לשגשג", def: "להצליח ולפרוח מאוד", sentence: "העסק התחיל ___." },
+                    { id: 518, word: "מסקנות", ar: "מסקנות", def: "דברים שמבינים בסוף תהליך", sentence: "הגענו ל___ בסוף המחקר." },
+                    { id: 519, word: "חשכה", ar: "חשכה", def: "מצב שבו אין אור בכלל", sentence: "הלכנו בתוך ה___." },
+                    { id: 520, word: "הצטלם", ar: "הצטלם", def: "עשה תמונה של עצמו", sentence: "הוא ___ ליד המגדל." },
+                    { id: 521, word: "פעילים", ar: "פעילים", def: "אנשים שעושים הרבה למען מטרה", sentence: "הם ___ מאוד בקהילה." },
+                    { id: 522, word: "טריטוריה", ar: "טריטוריה", def: "שטח השייך לחיה או מדינה", sentence: "האריה שומר על ה___ שלו." },
+                    { id: 523, word: "תרומה", ar: "תרומה", def: "נתינה של כסף או עזרה", sentence: "הוא נתן ___ נדיבה." },
+                    { id: 524, word: "ניסוי", ar: "ניסוי", def: "בדיקה מדעית של השערה", sentence: "העורך עשה ___ במעבדה." },
+                    { id: 525, word: "חיוני", ar: "חיוני", def: "דבר שאי אפשר בלעדיו", sentence: "מים הם דבר ___ לחיים." }
+                ]
             }
         };
 
@@ -234,7 +231,9 @@
             
             const timerRef = useRef(null);
             const userRef = useRef(null);
+            const hasSynced = useRef(false); // Fix: Prevent double sync
             const langRef = useRef(lang);
+
             useEffect(() => { langRef.current = lang; }, [lang]);
 
             const isHeb = lang === 'Hebrew';
@@ -243,42 +242,43 @@
                 title: isHeb ? "מאסטר אוצר מילים" : "VOCAB MASTER",
                 subtitle: "Fouad Nasir",
                 namePlaceholder: isHeb ? "שם התלמיד" : "Student Name",
-                classPlaceholder: isHeb ? "כיתה (למשל יא2)" : "Class (e.g. 11B)",
-                enterBtn: isHeb ? "כניסה למערכת" : "ENTER PORTAL",
-                welcome: isHeb ? "ברוך הבא, " : "Welcome, ",
-                changeLang: isHeb ? "החלף שפה" : "CHANGE LANGUAGE",
-                vocabList: isHeb ? "רשימת מילים" : "Vocab List",
-                speed: isHeb ? "קוֹשִׁי" : "Difficulty",
-                mode: isHeb ? "מצב משחק" : "Mode",
-                practiceTitle: isHeb ? "תרגול זיכרון" : "Memory Practice",
-                practiceDesc: isHeb ? "חזרה על המילים באמצעות התאמת 10 זוגות" : "Review words through matching 10 pairs.",
-                testTitle: isHeb ? "ביצוע מבחן" : "Take a Test",
-                testDesc: isHeb ? "מבחן הערכה (10 שאלות)" : "10-question assessment.",
+                classPlaceholder: isHeb ? "כיתה" : "Class",
+                enterBtn: isHeb ? "כניסה" : "ENTER",
+                welcome: isHeb ? "שלום, " : "Hello, ",
+                changeLang: isHeb ? "שפה" : "Lang",
+                vocabList: isHeb ? "רשימה" : "List",
+                speed: isHeb ? "קושי" : "Difficulty",
+                mode: isHeb ? "מצב" : "Mode",
+                practiceTitle: isHeb ? "זיכרון" : "Memory",
+                practiceDesc: isHeb ? "התאמת זוגות מילים" : "Match pairs of words.",
+                testTitle: isHeb ? "מבחן" : "Test",
+                testDesc: isHeb ? "מבחן הערכה" : "Assessment quiz.",
                 quit: isHeb ? "יציאה" : "Quit",
                 scoreLabel: isHeb ? "ניקוד: " : "Score: ",
-                submit: isHeb ? "הגש מבחן" : "SUBMIT TEST",
-                tryAgain: isHeb ? "נסה שוב" : "Try Again",
-                mainMenu: isHeb ? "חזרה לתפריט ראשי" : "Return to Main Menu",
-                finalScore: isHeb ? "ציון סופי" : "Final Score",
-                question: isHeb ? "שאלה" : "Question"
+                submit: isHeb ? "הגשה" : "SUBMIT",
+                tryAgain: isHeb ? "שוב" : "Retry",
+                mainMenu: isHeb ? "תפריט" : "Menu",
+                finalScore: isHeb ? "ציון" : "Score",
+                question: isHeb ? "שאלה" : "Q"
             };
 
             const formatTimeLabel = (s) => `${Math.floor(s/60)}:${(s%60).toString().padStart(2, '0')}`;
 
             const triggerSync = async (modeName, finalScore, timeSpent) => {
+                if (hasSynced.current) return; // Guard
+                hasSynced.current = true;
                 setSyncing(true);
                 const payload = [
                     new Date().toLocaleString('en-GB'),
                     userRef.current?.name,
                     userRef.current?.className,
-                    langRef.current === 'Hebrew' ? 'Hebrew' : 'English',
+                    langRef.current,
                     modeName,
                     gameConfig.list,
                     gameConfig.difficulty,
                     finalScore,
                     timeSpent
                 ];
-
                 try {
                     await fetch(GOOGLE_SHEET_URL, { 
                         method: 'POST', 
@@ -300,22 +300,23 @@
             };
 
             const startGame = () => {
+                hasSynced.current = false;
                 const list = VOCAB_DATA[lang][gameConfig.list] || VOCAB_DATA[lang]['A'] || VOCAB_DATA[lang]['א'];
-                const baseTime = 240; // Increased time slightly
-                setTimeLeft(baseTime); 
+                setTimeLeft(240); 
                 setScore(0); setMatched([]); setFlipped([]); setIsGameOver(false); setView('game');
                 
                 const subset = [...list].sort(() => 0.5 - Math.random()).slice(0, 10);
                 const newCards = [];
                 subset.forEach(item => {
-                    newCards.push({ id: item.id, text: item.word, type: 'native', uid: `n-${item.id}`, isHeb: lang === 'Hebrew' });
+                    newCards.push({ id: item.id, text: item.word, type: 'native' });
                     const matchText = gameConfig.mode === 'Word-Arabic' ? item.ar : item.def;
-                    newCards.push({ id: item.id, text: matchText, type: 'match', uid: `m-${item.id}`, isAr: gameConfig.mode === 'Word-Arabic', isDef: gameConfig.mode === 'Word-Definition' });
+                    newCards.push({ id: item.id, text: matchText, type: 'match' });
                 });
                 setCards(newCards.sort(() => 0.5 - Math.random()));
             };
 
             const startTest = () => {
+                hasSynced.current = false;
                 setTestResult(null); setTestAnswers({}); setTimeLeft(300);
                 const fullList = VOCAB_DATA[lang][gameConfig.list] || VOCAB_DATA[lang]['A'] || VOCAB_DATA[lang]['א'];
                 const shuffled = [...fullList].sort(() => 0.5 - Math.random());
@@ -331,44 +332,45 @@
             };
 
             const submitTest = () => {
+                if (hasSynced.current) return;
                 let p = 0;
                 testQuestions.forEach(q => { if (testAnswers[q.id] === q.correct) p += 10; });
                 setTestResult(p);
-                const timeStr = formatTimeLabel(300 - timeLeft);
-                triggerSync("Test", p, timeStr);
+                triggerSync("Test", p, formatTimeLabel(300 - timeLeft));
             };
 
             useEffect(() => {
                 if (user && (view === 'game' || (view === 'test' && testResult === null)) && timeLeft > 0) {
                     timerRef.current = setInterval(() => setTimeLeft(t => t - 1), 1000);
                 }
-                if (timeLeft === 0 && user && (view === 'game' || (view === 'test' && testResult === null))) {
+                if (timeLeft === 0 && user && !hasSynced.current) {
                     if (view === 'game') {
                         setIsGameOver(true);
-                        triggerSync("Memory Practice", score, "Time Up");
-                    } else submitTest();
+                        triggerSync("Memory", score, "Time Up");
+                    } else if (view === 'test' && testResult === null) {
+                        submitTest();
+                    }
                 }
                 return () => clearInterval(timerRef.current);
-            }, [user, view, timeLeft, testResult]);
+            }, [user, view, timeLeft, testResult, score]);
 
-            // Helper to determine font size based on text length
             const getFontSize = (text, type) => {
-                if (type === 'native') return 'text-xl sm:text-2xl font-black';
-                if (text.length > 50) return 'text-xs sm:text-sm font-bold';
-                if (text.length > 30) return 'text-sm sm:text-base font-bold';
-                return 'text-base sm:text-lg font-black';
+                if (type === 'native') return 'text-lg sm:text-2xl font-black';
+                if (text.length > 50) return 'text-[0.65rem] sm:text-xs font-bold';
+                if (text.length > 30) return 'text-xs sm:text-sm font-bold';
+                return 'text-sm sm:text-base font-black';
             };
 
             if (view === 'login') return (
-                <div className="min-h-[90vh] flex items-center justify-center">
-                    <div className="bg-white rounded-[2rem] p-8 w-full max-w-sm shadow-2xl text-center border-t-8 border-indigo-600">
-                        <h1 className={`text-4xl font-black text-indigo-900 mb-1 ${isHeb ? 'hebrew' : ''}`}>{UI.title}</h1>
+                <div className="min-h-[90vh] flex items-center justify-center p-4">
+                    <div className="bg-white rounded-[2rem] p-6 w-full max-w-sm shadow-2xl text-center border-t-8 border-indigo-600">
+                        <h1 className={`text-3xl font-black text-indigo-900 mb-1 ${isHeb ? 'hebrew' : ''}`}>{UI.title}</h1>
                         <p className="text-indigo-600 font-bold mb-6 italic">{UI.subtitle}</p>
                         <div className="space-y-4">
                             <input id="nameIn" placeholder={UI.namePlaceholder} className={`w-full p-4 bg-slate-100 rounded-xl font-bold border-2 border-transparent focus:border-indigo-500 outline-none text-lg ${isHeb ? 'hebrew text-right' : ''}`} />
                             <input id="classIn" placeholder={UI.classPlaceholder} className={`w-full p-4 bg-slate-100 rounded-xl font-bold border-2 border-transparent focus:border-indigo-500 outline-none text-lg ${isHeb ? 'hebrew text-right' : ''}`} />
                             <div className="flex gap-2">
-                                <button onClick={() => { setLang('English'); setGameConfig({...gameConfig, list: 'A'}); }} className={`flex-1 py-3 rounded-xl font-black transition-all ${lang === 'English' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-200 text-slate-500'}`}>ENGLISH</button>
+                                <button onClick={() => { setLang('English'); setGameConfig({...gameConfig, list: 'A'}); }} className={`flex-1 py-3 rounded-xl font-black transition-all ${lang === 'English' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-200 text-slate-500'}`}>ENG</button>
                                 <button onClick={() => { setLang('Hebrew'); setGameConfig({...gameConfig, list: 'א'}); }} className={`flex-1 py-3 rounded-xl font-black transition-all ${lang === 'Hebrew' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-200 text-slate-500'} hebrew`}>עברית</button>
                             </div>
                             <button onClick={handleLogin} className={`w-full py-4 bg-indigo-600 text-white rounded-xl font-black text-xl shadow-lg hover:bg-indigo-700 transition-all ${isHeb ? 'hebrew' : ''}`}>{UI.enterBtn}</button>
@@ -378,63 +380,63 @@
             );
 
             if (view === 'menu') return (
-                <div className={`app-container space-y-4 py-8 ${isHeb ? 'rtl' : ''}`}>
-                    <div className="bg-white rounded-[2rem] p-6 shadow-xl mx-2">
+                <div className={`app-container space-y-4 py-4 sm:py-8 ${isHeb ? 'rtl' : ''}`}>
+                    <div className="bg-white rounded-[2rem] p-5 shadow-xl mx-2">
                         <div className="flex justify-between items-start mb-4">
-                            <div className="flex flex-col">
-                                <h2 className={`text-2xl font-black text-indigo-950 ${isHeb ? 'hebrew' : ''}`}>{UI.welcome}{user.name}</h2>
-                                <span className={`text-indigo-500 font-bold text-sm tracking-widest ${isHeb ? 'hebrew' : ''}`}>{lang === 'Hebrew' ? 'עברית' : 'English'}</span>
+                            <div>
+                                <h2 className={`text-xl font-black text-indigo-950 ${isHeb ? 'hebrew' : ''}`}>{UI.welcome}{user.name}</h2>
+                                <span className="text-indigo-500 font-bold text-xs uppercase tracking-widest">{lang}</span>
                             </div>
-                            <button onClick={() => setView('login')} className={`text-xs bg-slate-100 px-3 py-2 rounded-lg text-indigo-600 font-black ${isHeb ? 'hebrew' : ''}`}>{UI.changeLang}</button>
+                            <button onClick={() => setView('login')} className="text-[10px] bg-slate-100 px-3 py-2 rounded-lg text-indigo-600 font-black uppercase tracking-tight">{UI.changeLang}</button>
                         </div>
-                        <div className="grid grid-cols-2 gap-3 mb-4">
+                        <div className="grid grid-cols-2 gap-2 mb-4">
                             <div className="space-y-1">
-                                <label className={`text-xs font-black text-indigo-500 uppercase ml-1 ${isHeb ? 'hebrew text-right block' : ''}`}>{UI.vocabList}</label>
-                                <select className={`w-full p-3 bg-slate-50 rounded-xl font-black text-lg outline-none border border-slate-200 ${isHeb ? 'hebrew' : ''}`} value={gameConfig.list} onChange={e => setGameConfig({...gameConfig, list: e.target.value})}>
-                                    {Object.keys(VOCAB_DATA[lang]).map(l => <option key={l} value={l}>{isHeb ? 'רשימה' : 'LIST'} {l}</option>)}
+                                <label className={`text-[10px] font-black text-indigo-500 uppercase ml-1 ${isHeb ? 'hebrew text-right block' : ''}`}>{UI.vocabList}</label>
+                                <select className="w-full p-2 bg-slate-50 rounded-lg font-black text-sm outline-none border border-slate-200" value={gameConfig.list} onChange={e => setGameConfig({...gameConfig, list: e.target.value})}>
+                                    {Object.keys(VOCAB_DATA[lang]).map(l => <option key={l} value={l}>{l}</option>)}
                                 </select>
                             </div>
                             <div className="space-y-1">
-                                <label className={`text-xs font-black text-indigo-500 uppercase ml-1 ${isHeb ? 'hebrew text-right block' : ''}`}>{UI.speed}</label>
-                                <select className={`w-full p-3 bg-slate-50 rounded-xl font-black text-lg outline-none border border-slate-200 ${isHeb ? 'hebrew' : ''}`} value={gameConfig.difficulty} onChange={e => setGameConfig({...gameConfig, difficulty: e.target.value})}>
-                                    <option>{isHeb ? 'קל' : 'Easy'}</option><option>{isHeb ? 'בינוני' : 'Medium'}</option><option>{isHeb ? 'קשה' : 'Hard'}</option>
+                                <label className={`text-[10px] font-black text-indigo-500 uppercase ml-1 ${isHeb ? 'hebrew text-right block' : ''}`}>{UI.speed}</label>
+                                <select className="w-full p-2 bg-slate-50 rounded-lg font-black text-sm outline-none border border-slate-200" value={gameConfig.difficulty} onChange={e => setGameConfig({...gameConfig, difficulty: e.target.value})}>
+                                    <option>Easy</option><option>Medium</option><option>Hard</option>
                                 </select>
                             </div>
                         </div>
                         <div className="space-y-1">
-                            <label className={`text-xs font-black text-indigo-500 uppercase ml-1 ${isHeb ? 'hebrew text-right block' : ''}`}>{UI.mode}</label>
-                            <select className={`w-full p-3 bg-slate-50 rounded-xl font-black text-lg outline-none border border-slate-200 ${isHeb ? 'hebrew' : ''}`} value={gameConfig.mode} onChange={e => setGameConfig({...gameConfig, mode: e.target.value})}>
-                                <option value="Word-Arabic">{isHeb ? 'מילה-ערבית' : 'Word-Arabic'}</option>
-                                <option value="Word-Definition">{isHeb ? 'מילה-הגדרה' : 'Word-Definition'}</option>
+                            <label className={`text-[10px] font-black text-indigo-500 uppercase ml-1 ${isHeb ? 'hebrew text-right block' : ''}`}>{UI.mode}</label>
+                            <select className="w-full p-2 bg-slate-50 rounded-lg font-black text-sm outline-none border border-slate-200" value={gameConfig.mode} onChange={e => setGameConfig({...gameConfig, mode: e.target.value})}>
+                                <option value="Word-Arabic">Word-Arabic</option>
+                                <option value="Word-Definition">Word-Definition</option>
                             </select>
                         </div>
                     </div>
-                    <div className="px-2 space-y-4">
-                        <button onClick={startGame} className={`w-full p-6 bg-indigo-600 text-white rounded-[2rem] shadow-lg hover:brightness-110 transition-all ${isHeb ? 'text-right' : 'text-left'}`}>
-                            <h3 className={`text-2xl font-black ${isHeb ? 'hebrew' : ''}`}>{UI.practiceTitle}</h3>
-                            <p className={`text-indigo-200 text-sm ${isHeb ? 'hebrew' : ''}`}>{UI.practiceDesc}</p>
+                    <div className="px-2 space-y-3">
+                        <button onClick={startGame} className={`w-full p-5 bg-indigo-600 text-white rounded-[1.5rem] shadow-lg hover:brightness-110 transition-all ${isHeb ? 'text-right' : 'text-left'}`}>
+                            <h3 className={`text-xl font-black ${isHeb ? 'hebrew' : ''}`}>{UI.practiceTitle}</h3>
+                            <p className="text-indigo-200 text-xs opacity-80">{UI.practiceDesc}</p>
                         </button>
-                        <button onClick={startTest} className={`w-full p-6 bg-white text-indigo-900 rounded-[2rem] shadow-lg border-2 border-indigo-600 hover:bg-indigo-50 transition-all ${isHeb ? 'text-right' : 'text-left'}`}>
-                            <h3 className={`text-2xl font-black ${isHeb ? 'hebrew' : ''}`}>{UI.testTitle}</h3>
-                            <p className={`text-slate-400 text-sm ${isHeb ? 'hebrew' : ''}`}>{UI.testDesc}</p>
+                        <button onClick={startTest} className={`w-full p-5 bg-white text-indigo-900 rounded-[1.5rem] shadow-lg border-2 border-indigo-600 hover:bg-indigo-50 transition-all ${isHeb ? 'text-right' : 'text-left'}`}>
+                            <h3 className={`text-xl font-black ${isHeb ? 'hebrew' : ''}`}>{UI.testTitle}</h3>
+                            <p className="text-slate-400 text-xs">{UI.testDesc}</p>
                         </button>
                     </div>
                 </div>
             );
 
             if (view === 'game') return (
-                <div className={`app-container py-2 sm:py-4 flex flex-col min-h-screen ${isHeb ? 'rtl' : ''}`}>
-                    <div className="flex justify-between items-center mb-4 bg-white/20 p-4 rounded-2xl sticky top-0 z-10 backdrop-blur-md border border-white/20 shadow-lg mx-2">
-                        <span className="text-white font-black text-xl tabular-nums">{formatTimeLabel(timeLeft)}</span>
-                        <button onClick={() => setView('menu')} className={`text-white font-bold text-xs uppercase bg-black/20 px-4 py-2 rounded-full ${isHeb ? 'hebrew' : ''}`}>{UI.quit}</button>
-                        <span className={`text-white font-black text-xl ${isHeb ? 'hebrew' : ''}`}>{UI.scoreLabel}{score}</span>
+                <div className={`app-container py-2 flex flex-col min-h-screen ${isHeb ? 'rtl' : ''}`}>
+                    <div className="flex justify-between items-center mb-4 bg-white/10 p-3 rounded-2xl sticky top-0 z-10 backdrop-blur-md border border-white/20 shadow-md mx-2">
+                        <span className="text-white font-black text-lg tabular-nums">{formatTimeLabel(timeLeft)}</span>
+                        <button onClick={() => setView('menu')} className="text-white font-bold text-[10px] uppercase bg-black/20 px-3 py-1.5 rounded-full">{UI.quit}</button>
+                        <span className="text-white font-black text-lg">{UI.scoreLabel}{score}</span>
                     </div>
                     
                     <div className="game-grid px-2 pb-24">
                         {cards.map((card, i) => {
                             const show = flipped.includes(i) || matched.includes(card.id);
                             return (
-                                <div key={card.uid} onClick={() => {
+                                <div key={`${card.type}-${card.id}-${i}`} onClick={() => {
                                     if (isGameOver || flipped.length === 2 || flipped.includes(i) || matched.includes(card.id)) return;
                                     const next = [...flipped, i]; setFlipped(next);
                                     if (next.length === 2) {
@@ -445,18 +447,17 @@
                                             const newScore = Math.min(100, (newMatched.length * 10));
                                             setScore(newScore); 
                                             setFlipped([]);
-                                            if (newMatched.length === 10) {
+                                            if (newMatched.length === 10 && !hasSynced.current) {
                                                 setIsGameOver(true);
-                                                const timeSpent = formatTimeLabel(240 - timeLeft);
-                                                triggerSync("Memory Practice", 100, timeSpent);
+                                                triggerSync("Memory", 100, formatTimeLabel(240 - timeLeft));
                                             }
                                         } else { setTimeout(() => setFlipped([]), 800); }
                                     }
-                                }} className="aspect-[4/3] sm:aspect-[1/1] perspective-1000">
+                                }} className="aspect-[4/3] perspective-1000">
                                     <div className={`card-inner ${show ? 'card-flipped' : ''} h-full`}>
-                                        <div className="card-front text-3xl sm:text-5xl">?</div>
+                                        <div className="card-front text-2xl">?</div>
                                         <div className={`card-back ${matched.includes(card.id) ? 'bg-emerald-500 border-emerald-400 text-white' : 'text-indigo-900'} flex items-center justify-center`}>
-                                            <div className={`card-text ${getFontSize(card.text, card.type)} ${card.isAr ? 'arabic' : card.isHeb ? 'hebrew' : ''}`}>
+                                            <div className={`card-text ${getFontSize(card.text, card.type)} ${gameConfig.mode === 'Word-Arabic' && card.type === 'match' ? 'arabic' : isHeb && card.type === 'native' ? 'hebrew' : ''}`}>
                                                 {card.text}
                                             </div>
                                         </div>
@@ -469,10 +470,10 @@
                     {isGameOver && (
                         <div className="fixed inset-0 bg-indigo-950/90 flex items-center justify-center p-6 z-50">
                             <div className="bg-white rounded-[2rem] p-8 text-center w-full max-w-sm shadow-2xl">
-                                <h2 className={`text-3xl font-black text-indigo-900 mb-2 ${isHeb ? 'hebrew' : ''}`}>DONE!</h2>
+                                <h2 className="text-3xl font-black text-indigo-900 mb-2">COMPLETE!</h2>
                                 <div className="text-6xl font-black text-indigo-600 mb-6">{score}</div>
-                                <button onClick={startGame} className={`w-full py-4 bg-indigo-600 text-white rounded-xl font-bold mb-3 text-lg ${isHeb ? 'hebrew' : ''}`}>{UI.tryAgain}</button>
-                                <button onClick={() => setView('menu')} className={`text-slate-400 font-bold uppercase text-xs ${isHeb ? 'hebrew' : ''}`}>{UI.mainMenu}</button>
+                                <button onClick={startGame} className="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold mb-3 text-lg">{UI.tryAgain}</button>
+                                <button onClick={() => setView('menu')} className="text-slate-400 font-bold uppercase text-xs">{UI.mainMenu}</button>
                             </div>
                         </div>
                     )}
@@ -481,38 +482,36 @@
 
             if (view === 'test') return (
                 <div className={`app-container py-4 ${isHeb ? 'rtl' : ''}`}>
-                    <div className="bg-white rounded-[2rem] shadow-xl p-4 sm:p-8 mb-10 min-h-[80vh] mx-2">
+                    <div className="bg-white rounded-[2rem] shadow-xl p-5 sm:p-8 mb-10 min-h-[80vh] mx-2">
                         <header className="flex justify-between items-end mb-8 border-b-2 border-slate-100 pb-4">
-                            <div className={isHeb ? 'text-right' : ''}>
-                                <h2 className={`text-xl sm:text-2xl font-black text-indigo-950 uppercase ${isHeb ? 'hebrew' : ''}`}>{lang === 'Hebrew' ? 'מבחן' : 'TEST'} {gameConfig.list}</h2>
-                            </div>
-                            <span className="text-2xl sm:text-3xl font-black text-indigo-600 tabular-nums">{formatTimeLabel(timeLeft)}</span>
+                            <h2 className={`text-xl font-black text-indigo-950 uppercase ${isHeb ? 'hebrew' : ''}`}>{UI.testTitle} {gameConfig.list}</h2>
+                            <span className="text-2xl font-black text-indigo-600 tabular-nums">{formatTimeLabel(timeLeft)}</span>
                         </header>
 
                         {testResult === null ? (
-                            <div className="space-y-12">
+                            <div className="space-y-10">
                                 {testQuestions.map((q, idx) => (
-                                    <div key={q.id} className="space-y-4">
-                                        <div className={`flex items-center gap-3 text-indigo-500 font-black text-sm uppercase ${isHeb ? 'flex-row-reverse' : ''}`}>
-                                            <span className={`bg-indigo-100 px-3 py-1 rounded-lg ${isHeb ? 'hebrew' : ''}`}>{UI.question} {idx + 1}</span>
+                                    <div key={q.id} className="space-y-3">
+                                        <div className="flex items-center gap-3 text-indigo-500 font-black text-[10px] uppercase">
+                                            <span className="bg-indigo-100 px-3 py-1 rounded-lg">{UI.question} {idx + 1}</span>
                                             <div className="h-[2px] flex-1 bg-slate-100"></div>
                                         </div>
                                         {q.type === 'multiple' ? (
-                                            <div className="space-y-5">
-                                                <p className={`text-lg sm:text-xl font-bold text-slate-800 leading-snug ${isHeb ? 'hebrew text-right' : ''}`}>
+                                            <div className="space-y-3">
+                                                <p className={`text-base font-bold text-slate-800 leading-tight ${isHeb ? 'hebrew text-right' : ''}`}>
                                                     {q.sentence.replace('___', '__________')}
                                                 </p>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                <div className="grid grid-cols-1 gap-2">
                                                     {q.options.map(opt => (
-                                                        <button key={opt} onClick={() => setTestAnswers({...testAnswers, [q.id]: opt})} className={`p-4 rounded-xl text-base sm:text-lg font-black border-2 transition-all ${isHeb ? 'hebrew' : ''} ${testAnswers[q.id] === opt ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-slate-50 border-transparent text-slate-600 hover:bg-slate-100'}`}>{opt}</button>
+                                                        <button key={opt} onClick={() => setTestAnswers({...testAnswers, [q.id]: opt})} className={`p-3 rounded-lg text-sm font-black border-2 transition-all ${isHeb ? 'hebrew' : ''} ${testAnswers[q.id] === opt ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-slate-50 border-transparent text-slate-600'}`}>{opt}</button>
                                                     ))}
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="space-y-4">
-                                                <p className={`text-lg sm:text-xl font-bold text-slate-800 leading-relaxed ${isHeb ? 'hebrew text-right' : ''}`}>
+                                            <div className="space-y-3">
+                                                <p className={`text-base font-bold text-slate-800 leading-snug ${isHeb ? 'hebrew text-right' : ''}`}>
                                                     {isHeb ? q.sentence.split('___')[1] : q.sentence.split('___')[0]}
-                                                    <select className={`gap-select mx-1 ${isHeb ? 'hebrew' : ''}`} value={testAnswers[q.id] || ""} onChange={(e) => setTestAnswers({...testAnswers, [q.id]: e.target.value})}>
+                                                    <select className="gap-select mx-1 text-sm" value={testAnswers[q.id] || ""} onChange={(e) => setTestAnswers({...testAnswers, [q.id]: e.target.value})}>
                                                         <option value="" disabled>---</option>
                                                         {q.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                                     </select>
@@ -522,15 +521,15 @@
                                         )}
                                     </div>
                                 ))}
-                                <button onClick={submitTest} disabled={syncing} className={`w-full py-6 bg-indigo-600 text-white rounded-2xl font-black text-2xl shadow-lg flex items-center justify-center gap-4 ${isHeb ? 'hebrew' : ''}`}>
+                                <button onClick={submitTest} disabled={syncing} className="w-full py-5 bg-indigo-600 text-white rounded-xl font-black text-xl shadow-lg flex items-center justify-center gap-4">
                                     {syncing && <div className="spinner"></div>} {UI.submit}
                                 </button>
                             </div>
                         ) : (
                             <div className="text-center py-10">
-                                <div className={`text-xs font-black text-indigo-400 uppercase tracking-widest mb-2 ${isHeb ? 'hebrew' : ''}`}>{UI.finalScore}</div>
-                                <div className="text-8xl sm:text-[9rem] font-black text-indigo-900 leading-none mb-6 tabular-nums">{testResult}</div>
-                                <button onClick={() => setView('menu')} className={`w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xl uppercase tracking-wider ${isHeb ? 'hebrew' : ''}`}>{UI.mainMenu}</button>
+                                <div className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2">{UI.finalScore}</div>
+                                <div className="text-8xl font-black text-indigo-900 leading-none mb-6 tabular-nums">{testResult}</div>
+                                <button onClick={() => setView('menu')} className="w-full py-4 bg-slate-900 text-white rounded-xl font-black text-lg uppercase">{UI.mainMenu}</button>
                             </div>
                         )}
                     </div>
