@@ -156,9 +156,9 @@
                     { id: 404, word: "outcome", ar: "نتيجة", def: "Way a thing turns out", sentence: "We are waiting for the ___." },
                     { id: 405, word: "period", ar: "فترة", def: "Length of time", sentence: "It was a difficult ___ for her." },
                     { id: 406, word: "policy", ar: "سياسة", def: "Course of action adopted", sentence: "What is the company's ___?" },
-                    { id: 407, word: "range", ar: "نטاق", def: "Area of variation", sentence: "The price ___ is quite wide." },
+                    { id: 407, word: "range", ar: "نطاق", def: "Area of variation", sentence: "The price ___ is quite wide." },
                     { id: 408, word: "require", ar: "يتطلب", def: "Need for a particular purpose", sentence: "Does this ___ a signature?" },
-                    { id: 409, word: "source", ar: "مصדר", def: "Place where something starts", sentence: "What is the ___ of this information?" },
+                    { id: 409, word: "source", ar: "مصدر", def: "Place where something starts", sentence: "What is the ___ of this information?" },
                     { id: 410, word: "theory", ar: "نظرية", def: "Supposition or system of ideas", sentence: "In ___ it should work fine." }
                 ]
             },
@@ -169,7 +169,7 @@
                     { id: 503, word: "יערות", ar: "غابات", def: "שטחים גדולים מלאים בעצים", sentence: "יש הרבה חיות בתוך ___." },
                     { id: 504, word: "מקומות בילוי", ar: "أماكن ترفيه", def: "מקומות שאנשים הולכים להנות", sentence: "העיר מלאה ב___." },
                     { id: 505, word: "לפענח", ar: "فك الرموز", def: "למצוא פתרון לקוד או סוד", sentence: "ניסינו ___ את סוד המפה." },
-                    { id: 506, word: "משימה", ar: "مهمة", def: "עבודה שצריך לבצע", sentence: "היתה לנו ___ קשה לסיים." },
+                    { id: 506, word: "משימה", ar: "משימה", def: "עבודה שצריך לבצע", sentence: "היתה לנו ___ קשה לסיים." },
                     { id: 507, word: "אתגר", ar: "تحدي", def: "משהו שקשה לעשות", sentence: "הטיפוס היה ___ אמיתי." },
                     { id: 508, word: "תחביב", ar: "هواية", def: "משהו שעושים בשעות הפנאי", sentence: "הציור הוא ה___ הכי אהוב עליי." },
                     { id: 509, word: "הפתעה", ar: "مفاجأة", def: "משהו שלא ציפינו לו", sentence: "הכינו לו ___ גדולה ליום ההולדת." },
@@ -241,7 +241,25 @@
                 modeOptions: isHeb ? 
                     [{ v: "Word-Arabic", l: "מילה-ערבית" }, { v: "Word-Definition", l: "מילה-הגדרה" }] : 
                     [{ v: "Word-Arabic", l: "Word-Arabic" }, { v: "Word-Definition", l: "Word-Definition" }],
-                complete: isHeb ? "הושלם!" : "COMPLETE!"
+                complete: isHeb ? "הושלם!" : "COMPLETE!",
+                review: isHeb ? "סקירת תשובות" : "Review Answers",
+                correct: isHeb ? "נכון" : "Correct",
+                yourAnswer: isHeb ? "התשובה שלך" : "Your Answer",
+                missed: isHeb ? "טעויות לשיפור" : "Mistakes to Review"
+            };
+
+            const getEncouragement = (score) => {
+                if (isHeb) {
+                    if (score === 100) return "מצוין! כל הכבוד על ההישג המושלם!";
+                    if (score >= 80) return "עבודה נהדרת! אתה בדרך הנכונה!";
+                    if (score >= 60) return "טוב מאוד, המשך להתאמן ותשתפר!";
+                    return "אל תתייאש, תרגול נוסף יביא אותך להצלחה!";
+                } else {
+                    if (score === 100) return "Outstanding! Perfect score!";
+                    if (score >= 80) return "Great job! You are mastering this list!";
+                    if (score >= 60) return "Well done! Keep practicing to reach the top!";
+                    return "Don't give up! Practice makes perfect.";
+                }
             };
 
             const triggerSync = async (modeName, finalScore, timeSpent) => {
@@ -249,7 +267,6 @@
                 hasSynced.current = true;
                 setSyncing(true);
                 
-                // Final safety check: if score is undefined or falsy (except 0), set to 0
                 const scoreValue = (finalScore !== undefined && finalScore !== null) ? finalScore.toString() : "0";
 
                 const payload = [
@@ -290,7 +307,6 @@
                 setTimeLeft(240); 
                 setScore(0); setMatched([]); setFlipped([]); setIsGameOver(false); setView('game');
                 
-                // Both languages now use 10 items (20 cards)
                 const subset = [...list].sort(() => 0.5 - Math.random()).slice(0, 10);
                 const newCards = [];
                 subset.forEach(item => {
@@ -309,7 +325,6 @@
                 
                 const questions = shuffled.map((item, index) => ({
                     id: item.id,
-                    // 5 Multiple choice (index 0-4), 5 Dropdown (index 5-9)
                     type: index < 5 ? 'multiple' : 'dropdown',
                     correct: item.word,
                     sentence: item.sentence,
@@ -430,6 +445,9 @@
                         {cards.map((card, i) => {
                             const isMatched = matched.includes(card.id);
                             const isFlipped = flipped.includes(i) || isMatched;
+                            const isHebrewCard = isHeb && card.type === 'native';
+                            const isArabicCard = gameConfig.mode === 'Word-Arabic' && card.type === 'match';
+                            
                             return (
                                 <div key={i} onClick={() => {
                                     if (isGameOver || flipped.length === 2 || flipped.includes(i) || isMatched) return;
@@ -452,7 +470,7 @@
                                     <div className={`card-inner ${isFlipped ? 'card-flipped' : ''}`}>
                                         <div className="card-front">?</div>
                                         <div className={`card-back ${isMatched ? 'bg-emerald-500 border-emerald-400 text-white' : 'text-indigo-900'}`}>
-                                            <div className={`card-text ${getFontSize(card.text, card.type)} ${gameConfig.mode === 'Word-Arabic' && card.type === 'match' ? 'arabic' : isHeb && card.type === 'native' ? 'hebrew' : ''}`}>
+                                            <div className={`card-text ${getFontSize(card.text, card.type)} ${isArabicCard ? 'arabic' : isHebrewCard ? 'hebrew' : ''}`}>
                                                 {card.text}
                                             </div>
                                         </div>
@@ -466,7 +484,8 @@
                         <div className="fixed inset-0 bg-indigo-950/90 flex items-center justify-center p-6 z-50">
                             <div className="bg-white rounded-[2rem] p-8 text-center w-full max-w-sm shadow-2xl">
                                 <h2 className={`text-3xl font-black text-indigo-900 mb-2 ${isHeb ? 'hebrew' : ''}`}>{UI.complete}</h2>
-                                <div className="text-6xl font-black text-indigo-600 mb-6 tabular-nums">{score}</div>
+                                <div className="text-6xl font-black text-indigo-600 mb-2 tabular-nums">{score}</div>
+                                <p className={`text-slate-500 font-bold mb-6 italic ${isHeb ? 'hebrew' : ''}`}>{getEncouragement(score)}</p>
                                 <button onClick={startGame} className={`w-full py-4 bg-indigo-600 text-white rounded-xl font-bold mb-3 text-lg ${isHeb ? 'hebrew' : ''}`}>{UI.tryAgain}</button>
                                 <button onClick={() => setView('menu')} className={`text-slate-400 font-bold uppercase text-xs ${isHeb ? 'hebrew' : ''}`}>{UI.mainMenu}</button>
                             </div>
@@ -480,7 +499,7 @@
                     <div className="bg-white rounded-[2rem] shadow-xl p-6 sm:p-10 mb-10 max-w-2xl mx-auto">
                         <header className="flex justify-between items-center mb-8 border-b-2 border-slate-100 pb-4">
                             <h2 className={`text-xl font-black text-indigo-950 uppercase ${isHeb ? 'hebrew' : ''}`}>{UI.testTitle} {gameConfig.list}</h2>
-                            <span className="text-2xl font-black text-indigo-600 tabular-nums">{Math.floor(timeLeft/60)}:{(timeLeft%60).toString().padStart(2, '0')}</span>
+                            {testResult === null && <span className="text-2xl font-black text-indigo-600 tabular-nums">{Math.floor(timeLeft/60)}:{(timeLeft%60).toString().padStart(2, '0')}</span>}
                         </header>
 
                         {testResult === null ? (
@@ -521,9 +540,39 @@
                                 </button>
                             </div>
                         ) : (
-                            <div className="text-center py-10">
+                            <div className="text-center py-6">
                                 <div className={`text-sm font-black text-indigo-400 uppercase tracking-widest mb-2 ${isHeb ? 'hebrew' : ''}`}>{UI.finalScoreLabel}</div>
-                                <div className="text-9xl font-black text-indigo-900 leading-none mb-8 tabular-nums">{testResult}</div>
+                                <div className="text-9xl font-black text-indigo-900 leading-none mb-4 tabular-nums">{testResult}</div>
+                                <p className={`text-indigo-600 font-bold mb-10 text-lg ${isHeb ? 'hebrew' : ''}`}>{getEncouragement(testResult)}</p>
+                                
+                                {testResult < 100 && (
+                                    <div className="mb-10 text-left">
+                                        <h3 className={`text-lg font-black text-rose-600 mb-4 border-b pb-2 ${isHeb ? 'hebrew text-right' : ''}`}>{UI.missed}</h3>
+                                        <div className="space-y-4">
+                                            {testQuestions.filter(q => testAnswers[q.id] !== q.correct).map(q => {
+                                                const vocabItem = VOCAB_DATA[lang][gameConfig.list].find(v => v.id === q.id);
+                                                return (
+                                                    <div key={q.id} className={`p-4 bg-slate-50 rounded-xl border-r-4 ${isHeb ? 'border-rose-400 text-right' : 'border-rose-400 text-left'}`}>
+                                                        <div className={`font-black text-indigo-950 ${isHeb ? 'hebrew' : ''}`}>
+                                                            {q.sentence.replace('___', `[${q.correct}]`)}
+                                                        </div>
+                                                        <div className="mt-2 flex flex-col gap-1 text-sm">
+                                                            <div className="text-emerald-600 font-bold">
+                                                                {UI.correct}: <span className={isHeb ? 'hebrew' : ''}>{q.correct}</span>
+                                                                <span className="text-slate-400 mx-2">|</span>
+                                                                <span className="arabic">{vocabItem.ar}</span>
+                                                            </div>
+                                                            <div className="text-rose-500 font-bold">
+                                                                {UI.yourAnswer}: <span className={isHeb ? 'hebrew' : ''}>{testAnswers[q.id] || "---"}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
                                 <button onClick={() => setView('menu')} className={`w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xl uppercase shadow-xl ${isHeb ? 'hebrew' : ''}`}>{UI.mainMenu}</button>
                             </div>
                         )}
